@@ -1,0 +1,25 @@
+:root {
+  color-scheme: dark;
+  /* Exact RGB fill values extracted from the supplied JAMZA! 2025 PDF. */
+  --color-background: #580e79;
+  --color-surface: #590f74;
+  --color-indigo: #590f74;
+  --color-violet: #580e79;
+  --color-cream: #fff9f3;
+  --color-gold: #debf83;
+  --color-lavender: #e3d1ea;
+  --color-blush: #ffebeb;
+  --color-text: #fff9f3;
+  --color-muted: #e3d1ea;
+  --color-border: #e3d1ea40;
+  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+
+  /* Short aliases used throughout page-specific styles. */
+  --bg: var(--color-background);
+  --panel: var(--color-surface);
+  --cream: var(--color-cream);
+  --muted: var(--color-muted);
+  --line: var(--color-border);
+  --display: var(--font-display);
+}

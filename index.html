@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#580E79" />
+    <meta
+      name="description"
+      content="jamza brings independent artists, bold ideas and creative communities together."
+    />
+    <title>jamza — A different perspective.</title>
+
+    <link rel="icon" type="image/png" href="/images/logo-main.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header>
+      <div class="wrap navigation">
+        <a class="brand site-brand" href="#home" aria-label="jamza home">
+          <img src="/images/logo-main.png" alt="jamza logo" height="40" />
+        </a><button class="menu" aria-expanded="false" aria-controls="navigation">Menu ☰</button>
+        <nav id="navigation" aria-label="Main navigation">
+          <a href="#home">Home</a>
+          <a href="#our-story">Our Story</a>
+          <a href="#artists">The Artist</a>
+          <a href="#announcements-blogs">Announcements & Blogs</a>
+          <a href="#partners">Partners</a>
+          <a class="button" href="#contact">Contact Us</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <div id="content-status" class="wrap content-notice" role="status" hidden>
+        <span id="content-status-text"></span>
+        <button id="retry-content" class="read-story" type="button">Try again ↻</button>
+      </div>
+      <div class="hero" id="home" aria-label="Home">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <div class="eyebrow">Independent minds. Shared energy.</div>
+            <h1>Culture.<br />Connection.<br /><em>Possibility.</em></h1>
+            <p>
+              A space for artists to be seen, ideas to be heard, and something extraordinary to
+              happen.
+            </p>
+            <div class="hero-actions">
+              <a class="button" href="#artists">Meet the artists <span>↗</span></a
+              ><a class="text-link" href="#our-story">Discover our world ↓</a>
+            </div>
+            <div class="hero-note">Art & culture   /   Made of many perspectives</div>
+          </div>
+          <div class="visual">
+            <img
+              class="hero-photo"
+              src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1100&q=85"
+              alt="A performer holding a microphone under atmospheric stage lighting"
+              fetchpriority="high"
+            />
+            <div class="sun" aria-hidden="true">✳</div>
+            <div class="photo-note">
+              <small>The next wave starts here</small
+              ><strong>Different voices.<br />One shared stage. ↗</strong>
+            </div>
+          </div>
+        </div>
+        <div class="ticker" aria-hidden="true">
+          <div>
+            <span>Creative expression</span><i>✳</i><span>Meaningful connection</span><i>✳</i
+            ><span>Independent spirit</span><i>✳</i>
+          </div>
+        </div>
+      </div>
+      <section id="our-story" aria-label="Our Story">
+        <div class="wrap">
+          <div class="about">
+            <div>
+              <div class="eyebrow">01 / Our Story</div>
+              <h2>A wider view.<br />A closer connection.</h2>
+            </div>
+            <div class="about-copy">
+              <p>We believe the most interesting things happen when different worlds meet.</p>
+              <p>
+                jamza is a home for creative expression. We bring artists, audiences, and
+                collaborators together around a simple idea: culture grows when we make room for
+                each other.
+              </p>
+              <a class="text-link" href="#mission">What moves us ↘</a>
+            </div>
+          </div>
+          <div class="values" id="mission">
+            <article>
+              <small>01 / EXPRESSION</small>
+              <h3>Room to be yourself.</h3>
+              <p>
+                Champion independent voices and give original ideas the space they need to grow.
+              </p>
+            </article>
+            <article>
+              <small>02 / CONNECTION</small>
+              <h3>Better, together.</h3>
+              <p>
+                Build meaningful relationships across disciplines, communities, and perspectives.
+              </p>
+            </article>
+            <article>
+              <small>03 / POSSIBILITY</small>
+              <h3>Make what’s next.</h3>
+              <p>Open doors to collaboration, exploration, and a more inclusive creative future.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="artists" class="artists-section" aria-label="The Artist">
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">02 / The Artist</div>
+              <h2>Original voices.<br />Extraordinary energy.</h2>
+            </div>
+            <p>
+              Meet a few of the independent spirits shaping our world. Discover your next
+              inspiration.
+            </p>
+          </div>
+          <div class="artists" id="artist-grid"></div>
+          <div class="collection-action"><button type="button" class="button" id="view-all-artists" aria-haspopup="dialog" aria-controls="collection-dialog">View all artists</button></div>
+          <p class="demo">Independent expression. Shared possibilities.</p>
+        </div>
+      </section>
+      <section id="announcements-blogs" aria-label="Announcements & Blogs">
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">03 / Announcements & Blogs</div>
+              <h2>Notes from our world.</h2>
+            </div>
+            <a class="text-link" href="#contact">Have a story to share? ↗</a>
+          </div>
+          <div class="posts" id="post-grid"></div>
+          <div class="collection-action"><button type="button" class="button" id="view-all-posts" aria-haspopup="dialog" aria-controls="collection-dialog">View all</button></div>
+        </div>
+      </section>
+      <section id="partners" class="partners-section" aria-labelledby="partners-title">
+        <div class="wrap">
+          <div class="eyebrow">04 / Creative collaboration</div>
+          <h2 id="partners-title">Partners.</h2>
+          <p>Good company. Shared possibilities.</p>
+          <div class="partners" id="partner-grid"></div>
+          <div class="collection-action"><button type="button" class="button" id="view-all-partners" aria-haspopup="dialog" aria-controls="collection-dialog">View all</button></div>
+          <p class="demo">Creative collaboration, in good company.</p>
+        </div>
+      </section>
+      <section id="contact" class="contact-section" aria-label="Contact Us">
+        <div class="wrap contact">
+          <div class="contact-copy">
+            <div class="eyebrow">05 / Contact Us</div>
+            <h2>Great things<br />start with<br /><span>a hello.</span></h2>
+            <p>
+              An idea, a collaboration, or just a conversation. We’d love to hear what’s on your
+              mind.
+            </p>
+            <a id="contact-email" href="mailto:hello@jamza.com">hello@jamza.com ↗</a>
+            <p class="demo">Your message goes directly to the jamza team.</p>
+          </div>
+          <form id="contact-form">
+            <label class="honeypot" aria-hidden="true"
+              >Website<input name="website" tabindex="-1" autocomplete="off"
+            /></label>
+            <div class="form-grid">
+              <label
+                >Your name<input
+                  name="name"
+                  placeholder="Alex Morgan"
+                  autocomplete="name"
+                  maxlength="100"
+                  required /></label
+              ><label
+                >Email address<input
+                  name="email"
+                  type="email"
+                  placeholder="alex@example.com"
+                  autocomplete="email"
+                  maxlength="200"
+                  required /></label
+              ><label class="full"
+                >Subject<input
+                  name="subject"
+                  placeholder="Let’s collaborate"
+                  maxlength="160"
+                  required /></label
+              ><label class="full"
+                >Your message<textarea
+                  name="message"
+                  placeholder="Tell us what you have in mind…"
+                  maxlength="5000"
+                  required
+                ></textarea>
+              </label>
+            </div>
+            <button class="button" type="submit">Send your message <span>↗</span></button>
+            <p id="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap footer">
+        <a class="brand site-brand" href="#home">
+          <img src="/images/logo%20main.png" alt="jamza logo" height="40" />
+        </a>
+        <p>
+          © <span id="year"></span> <span id="footer-title">jamza</span>. A different perspective.
+        </p>
+        <div class="socials" id="socials"></div>
+      </div>
+    </footer>
+    <dialog id="collection-dialog" class="collection-dialog" aria-labelledby="collection-title">
+      <button type="button" class="close" aria-label="Close collection">×</button>
+      <div class="eyebrow">Explore jamza</div>
+      <h2 id="collection-title">All artists</h2>
+      <label class="collection-search">Search this collection<input id="collection-search" type="search" placeholder="Search artists…" aria-controls="collection-grid" autocomplete="off"></label>
+      <p id="collection-count" class="collection-count" role="status" aria-live="polite"></p>
+      <div id="collection-grid" class="collection-results"></div>
+    </dialog>
+    <dialog id="article-dialog" aria-labelledby="article-title">
+      <button class="close" aria-label="Close article">×</button>
+      <div class="eyebrow">Announcements & Blogs</div>
+      <h2 id="article-title"></h2>
+      <p id="article-body"></p>
+    </dialog>
+    <noscript
+      ><p class="noscript">
+        Enable JavaScript to view artists and articles and use the contact form.
+      </p></noscript
+    >
+    <script type="module" src="/src/site/main.js"></script>
+  </body>
+</html>
