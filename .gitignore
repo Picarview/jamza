@@ -1,7 +1,14 @@
 node_modules/
+.next/
+out/
 dist/
+dist-legacy/
+next-env.d.ts
+*.tsbuildinfo
 .env
-.env.*
+.env.example
+.env.local
+.env.test
 !.env.example
 !.env.test
 test-results/
@@ -10,3 +17,5 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+*.zip
+assets-source/

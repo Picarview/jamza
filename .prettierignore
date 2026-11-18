@@ -5,3 +5,6 @@ test-results/
 playwright-report/
 .env*
 supabase/**/*.sql
+.next/
+legacy/dist/
+dist-legacy/
