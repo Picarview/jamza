@@ -40,9 +40,9 @@ export function Footer({ settings, partners }: { settings: Settings; partners: P
         </Link>
 
         {/* Sponsors get a mention on every page; the full list lives on /partners. */}
-        <Link href="/partners" className="group mt-20 block border-t-2 border-plum/15 pt-8" aria-label="Sponsors and partners">
+        <Link href="/partners" className="group mt-20 block border-t-2 border-plum/15 pt-8" aria-label="Partners">
           <span className="eyebrow flex items-center gap-2 text-plum/55 transition-colors group-hover:text-plum">
-            Wrapped with love by <Icon icon={ArrowUpRight01Icon} size={14} />
+            Partners <Icon icon={ArrowUpRight01Icon} size={14} />
           </span>
           <span className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-5">
             {partners.map((p) => {
@@ -100,7 +100,7 @@ export function Footer({ settings, partners }: { settings: Settings; partners: P
 
         <div className="mt-10 flex flex-col gap-3 border-t border-plum/10 pt-6 text-sm text-plum/60 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/partners" className="w-fit transition-colors hover:text-plum">
-            Sponsors & partners
+            Partners
           </Link>
           <p>
             Designed by{' '}

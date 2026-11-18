@@ -1,7 +1,7 @@
 import { festival } from '@/content/festival';
 import { report2025 } from '@/content/report2025';
 import { sameAs, siteDescription, siteName, siteUrl } from './site';
-import type { Artist } from './types';
+import type { LineupArtist } from '@/content/lineup';
 
 const organizer = {
   '@type': 'Organization',
@@ -27,7 +27,7 @@ const place = {
 };
 
 /** MusicEvent for search results (date, venue, ticket prices). */
-export function festivalEvent(artists: Artist[]) {
+export function festivalEvent(artists: LineupArtist[]) {
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -61,7 +61,13 @@ export function festivalEvent(artists: Artist[]) {
             ...(t.endsAt ? { validThrough: t.endsAt } : {}),
           })),
         ...(artists.length
-          ? { performer: artists.map((a) => ({ '@type': 'Person', name: a.name })) }
+          ? {
+              performer: artists.map((a) => ({
+                '@type': a.name.includes('Band') ? 'MusicGroup' : 'Person',
+                name: a.name,
+                ...(a.url ? { sameAs: [a.url] } : {}),
+              })),
+            }
           : {}),
       },
     ],

@@ -11,7 +11,7 @@ const tilt = [-4, 3, -2, 4, -3, 2, -1, 3];
 /** Local logos ("/images/…") or CMS uploads (https). */
 export const partnerLogo = (image: string) => (image.startsWith('/') ? image : safeUrl(image));
 
-/** Sponsors & partners as gift tags hanging from a string — the /partners page. */
+/** Partners as gift tags hanging from a string — the /partners page. */
 export function Partners({ partners }: { partners: PartnerTag[] }) {
   return (
     <section
@@ -21,9 +21,9 @@ export function Partners({ partners }: { partners: PartnerTag[] }) {
       <div className="absolute -left-24 top-10 size-[26rem] rounded-full bg-gold/15 blur-[120px]" />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal className="text-center">
-          <p className="eyebrow text-gold">{brand('JAMZA!')} FESTIVAL 2026 · Sponsors & partners</p>
+          <p className="eyebrow text-gold">{brand('JAMZA!')} FESTIVAL 2026</p>
           <h1 id="partners-title" className="display mt-4 text-6xl sm:text-8xl">
-            Wrapped with love by
+            Partners
           </h1>
           <p className="mx-auto mt-4 max-w-md text-lg text-cream/80">
             The people and brands making {brand('JAMZA!')} happen this year.

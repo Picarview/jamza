@@ -228,7 +228,7 @@ export function PillNav() {
               onClick={() => setOpen(false)}
               className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-5 py-3 font-semibold"
             >
-              Sponsors & partners
+              Partners
             </a>
             <a
               href={festival.instagram.url}

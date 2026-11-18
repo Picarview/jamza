@@ -1,5 +1,6 @@
 import { getPublicContent } from '@/lib/content';
 import { festivalEvent } from '@/lib/structured-data';
+import { starterLineup } from '@/content/lineup';
 import { JsonLd } from '@/components/JsonLd';
 import { Hero } from '@/components/home/Hero';
 import { WhatIs } from '@/components/home/WhatIs';
@@ -17,14 +18,18 @@ export const revalidate = 60;
 
 export default async function Home() {
   const content = await getPublicContent();
+  // CMS artists take over once added in the admin; until then, the official 2026 list.
+  const lineup = content.artists.length
+    ? content.artists.map((a) => ({ ...a, url: '', tier: 'main' as const }))
+    : starterLineup;
   return (
     <>
-      <JsonLd data={festivalEvent(content.artists)} />
+      <JsonLd data={festivalEvent(lineup)} />
       <Hero />
       <WhatIs />
       <TheNight />
       <Tickets />
-      <Lineup artists={content.artists} />
+      <Lineup artists={lineup} />
       <StoryReel />
       <LastTime />
       <Venue />
