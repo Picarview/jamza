@@ -1,12 +1,16 @@
 /**
- * Sponsors & partners from the 2026 campaign poster. Shown until partners are added in the
- * admin dashboard (with logos); as soon as the CMS has any, those are used instead.
+ * JAMZA! FESTIVAL 2026 sponsors & partners — official list and order from the organisers.
+ * Shown until partners are added in the admin dashboard; once the CMS has any, those are used.
+ * Logos live in public/images/partners (originals in assets-source/partners).
  */
 export const starterPartners = [
-  { name: 'Afrodite Society' },
-  { name: 'GTP', tagline: 'Life. Styled.' },
-  { name: 'Phyrshaus' },
-  { name: 'Picarview' },
-  { name: 'Beda’s', tagline: 'Our venue' },
-  { name: 'Stonehouse' },
+  { name: 'Wafa House', image: '/images/partners/wafa-house.webp' },
+  { name: 'Picarview', image: '/images/partners/picarview.webp' },
+  { name: 'Beda’s Events Center', image: '/images/partners/bedas.webp', tagline: 'Our venue' },
+  { name: 'PHYR3HAUS', image: '/images/partners/phyr3haus.webp' },
+  { name: 'Afrodite Society', image: '/images/partners/afrodite-society.webp' },
+  { name: 'Breaktime_hq' },
+  { name: 'Stonehouse', image: '/images/partners/stonehouse.webp' },
+  { name: 'Kobena Africa', image: '/images/partners/kobena-africa.webp' },
+  { name: 'GTP', image: '/images/partners/gtp.webp', tagline: 'Life. Styled.' },
 ].map((p, i) => ({ id: `starter-${i}`, url: '', image: '', tagline: '', ...p }));

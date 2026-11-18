@@ -224,6 +224,13 @@ export function PillNav() {
               Read the {brand('JAMZA!')} 2025 report
             </a>
             <a
+              href="/partners"
+              onClick={() => setOpen(false)}
+              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-5 py-3 font-semibold"
+            >
+              Sponsors & partners
+            </a>
+            <a
               href={festival.instagram.url}
               target="_blank"
               rel="noopener noreferrer"

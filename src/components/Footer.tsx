@@ -10,10 +10,11 @@ import { festival } from '@/content/festival';
 import { safeUrl } from '@/lib/safe-url';
 import type { Settings } from '@/lib/types';
 import { HalfMoons } from './HalfMoons';
+import { partnerLogo, type PartnerTag } from './home/Partners';
 import { Icon } from './Icon';
 import { brand } from './Brand';
 
-export function Footer({ settings }: { settings: Settings }) {
+export function Footer({ settings, partners }: { settings: Settings; partners: PartnerTag[] }) {
   const socials = [
     { label: 'Instagram', url: safeUrl(settings.instagram) || festival.instagram.url, icon: InstagramIcon },
     { label: 'LinkedIn', url: safeUrl(settings.linkedin), icon: Linkedin01Icon },
@@ -38,7 +39,24 @@ export function Footer({ settings }: { settings: Settings }) {
           </span>
         </Link>
 
-        <div className="mt-20 flex flex-col gap-10 border-t-2 border-plum/15 pt-10 md:flex-row md:items-end md:justify-between">
+        {/* Sponsors get a mention on every page; the full list lives on /partners. */}
+        <Link href="/partners" className="group mt-20 block border-t-2 border-plum/15 pt-8" aria-label="Sponsors and partners">
+          <span className="eyebrow flex items-center gap-2 text-plum/55 transition-colors group-hover:text-plum">
+            Wrapped with love by <Icon icon={ArrowUpRight01Icon} size={14} />
+          </span>
+          <span className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-5">
+            {partners.map((p) => {
+              const logo = partnerLogo(p.image);
+              return logo ? (
+                <img key={p.id} src={logo} alt={p.name} loading="lazy" className="h-9 w-auto max-w-32 rounded object-contain opacity-80 transition-opacity group-hover:opacity-100" />
+              ) : (
+                <span key={p.id} className="headline text-lg text-plum/80">{p.name}</span>
+              );
+            })}
+          </span>
+        </Link>
+
+        <div className="mt-10 flex flex-col gap-10 border-t-2 border-plum/15 pt-10 md:flex-row md:items-end md:justify-between">
           <div className="flex items-end gap-5">
             <Image
               src="/images/logo-main.png"
@@ -81,9 +99,9 @@ export function Footer({ settings }: { settings: Settings }) {
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-plum/10 pt-6 text-sm text-plum/60 sm:flex-row sm:items-center sm:justify-between">
-          <a href="/#partners" className="w-fit transition-colors hover:text-plum">
+          <Link href="/partners" className="w-fit transition-colors hover:text-plum">
             Sponsors & partners
-          </a>
+          </Link>
           <p>
             Designed by{' '}
             {festival.credit.url ? (

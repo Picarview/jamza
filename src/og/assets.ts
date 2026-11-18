@@ -24,7 +24,7 @@ export async function ogAssets() {
 }
 
 export const heroPhoto = async () =>
-  toDataUri(await readFile(join(process.cwd(), 'public/images/festival/hero-singer.jpg')), 'image/jpeg');
+  toDataUri(await readFile(join(process.cwd(), 'src/og/hero-photo.jpg')), 'image/jpeg');
 
 export const reportCover = async () =>
   toDataUri(await readFile(join(process.cwd(), 'src/og/report-cover.jpg')), 'image/jpeg');

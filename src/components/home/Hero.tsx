@@ -14,10 +14,10 @@ import { Icon } from '../Icon';
  * Swap in high-res originals or a video loop here when they arrive.
  */
 const scenes = [
-  { label: 'Tonight', src: '/images/festival/hero-singer.jpg', focus: '55% 30%', light: '#d8461e' },
-  { label: 'Break Time', src: '/images/festival/break-time.jpg', focus: '60% 35%', light: '#f06a1f' },
-  { label: 'The Concert', src: '/images/festival/concert.jpg', focus: '45% 30%', light: '#00843d' },
-  { label: 'The After Party', src: '/images/festival/after-party.jpg', focus: '50% 30%', light: '#7a1aa3' },
+  { label: 'Tonight', src: '/images/festival/stage-ensemble.jpg', focus: '50% 35%', light: '#d8461e' },
+  { label: 'Break Time', src: '/images/festival/stage-bow-dress.jpg', focus: '55% 4%', light: '#f06a1f' },
+  { label: 'The Concert', src: '/images/festival/stage-guitar.jpg', focus: '55% 30%', light: '#00843d' },
+  { label: 'The After Party', src: '/images/festival/stage-solo.jpg', focus: '52% 28%', light: '#7a1aa3' },
 ] as const;
 
 const SCENE_MS = 6000;

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { PillNav } from '@/components/PillNav';
 import { Footer } from '@/components/Footer';
 import { getPublicContent } from '@/lib/content';
+import { starterPartners } from '@/content/partners';
 import { baseOpenGraph, siteDescription, siteName, siteUrl } from '@/lib/site';
 import { epilogue, swung } from './fonts';
 import './globals.css';
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: '#580e79' };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { settings } = await getPublicContent();
+  const { settings, partners } = await getPublicContent();
   return (
     <html lang="en" className={`${swung.variable} ${epilogue.variable}`}>
       <body className="grain overflow-x-clip">
@@ -58,7 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <PillNav />
         <main id="main">{children}</main>
-        <Footer settings={settings} />
+        <Footer settings={settings} partners={partners.length ? partners : starterPartners} />
       </body>
     </html>
   );

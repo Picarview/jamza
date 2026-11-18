@@ -14,7 +14,7 @@ export default async function OpengraphImage() {
     (
       <div style={{ display: 'flex', width: '100%', height: '100%', background: '#12031c', fontFamily: 'Epilogue', color: '#fff9f3' }}>
         {/* Stage photo, melting into the dark on the left */}
-        <img src={photo} alt="" width={760} height={630} style={{ position: 'absolute', right: 0, top: 0, width: 760, height: 630, objectFit: 'cover' }} />
+        <img src={photo} alt="" width={760} height={630} style={{ position: 'absolute', right: 0, top: 0, width: 760, height: 630, objectFit: 'cover', objectPosition: '50% 15%' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, width: 1200, height: 630, display: 'flex', background: 'linear-gradient(90deg, #12031c 0%, #12031c 36%, rgba(18,3,28,0.85) 46%, rgba(18,3,28,0.35) 64%, rgba(18,3,28,0) 85%)' }} />
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 10, display: 'flex', background: 'linear-gradient(90deg, #f06a1f, #00843d, #7a1aa3)' }} />
 

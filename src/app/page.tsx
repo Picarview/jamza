@@ -9,8 +9,6 @@ import { StoryReel } from '@/components/home/StoryReel';
 import { Venue } from '@/components/home/Venue';
 import { Tickets } from '@/components/home/Tickets';
 import { LastTime } from '@/components/home/LastTime';
-import { Partners } from '@/components/home/Partners';
-import { starterPartners } from '@/content/partners';
 import { UnderTheTree } from '@/components/home/UnderTheTree';
 import { Letter } from '@/components/home/Letter';
 
@@ -31,7 +29,6 @@ export default async function Home() {
       <LastTime />
       <Venue />
       <UnderTheTree posts={content.posts} />
-      <Partners partners={content.partners.length ? content.partners : starterPartners} />
       <Letter email={content.settings.email} />
     </>
   );
