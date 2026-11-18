@@ -8,16 +8,28 @@ import { Reveal } from '@/components/Reveal';
 import { ReportReader } from '@/components/report/ReportReader';
 import { festival } from '@/content/festival';
 import { report2025 as report } from '@/content/report2025';
+import { baseOpenGraph } from '@/lib/site';
+import { reportArticle } from '@/lib/structured-data';
+import { JsonLd } from '@/components/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'JAMZA! 2025 — Event Report',
-  description: report.summary,
-  openGraph: { title: 'JAMZA! 2025 — Event Report', description: report.summary, images: [report.pages[0].src] },
+  title: { absolute: 'JAMZA! 2025 — Event Report' },
+  description: `${report.summary} About 102 people, 14 female performers and Beda’s House Band.`,
+  alternates: { canonical: '/2025' },
+  openGraph: {
+    ...baseOpenGraph,
+    type: 'article',
+    url: '/2025',
+    title: 'JAMZA! 2025 — Event Report',
+    description: report.summary,
+  },
+  twitter: { card: 'summary_large_image', title: 'JAMZA! 2025 — Event Report', description: report.summary },
 };
 
 export default function Report2025() {
   return (
     <>
+      <JsonLd data={reportArticle()} />
       {/* Header */}
       <section className="relative overflow-hidden bg-[radial-gradient(70%_60%_at_80%_20%,#580e79_0%,#1f0530_55%,#12031c_100%)] pb-20 pt-32 sm:pt-40">
         <HalfMoons className="absolute -left-12 bottom-0 w-56 opacity-70 sm:w-72" flip />

@@ -39,4 +39,11 @@ supabase/                Database migrations — unchanged
 | Settings: email, Instagram, LinkedIn | Letter section + footer |
 | Inbox | Messages from the “Write us a letter” form |
 
+## SEO
+
+- Set `NEXT_PUBLIC_SITE_URL` in production (defaults to `https://jamzafestival.com`); canonical URLs, Open Graph, sitemap and robots all use it.
+- Share images are generated at build time: `src/app/opengraph-image.tsx` (home) and `src/app/2025/opengraph-image.tsx`. They read event details from `src/content/festival.ts`, so they update with it.
+- Favicon set (`src/app/favicon.ico`, `icon.png`, `apple-icon.png`, `public/icons/*`) is generated from the logo.
+- `src/lib/structured-data.ts` publishes the festival as a schema.org `MusicEvent` (date, venue, GHS ticket offers, performers from the CMS) and the 2025 report as a `Report`.
+
 Brand palette and the liquid-glass material are in `src/app/globals.css`. Source assets (original PNGs, font files, banner mockup) are kept in the git-ignored `assets-source/`.

@@ -1,4 +1,6 @@
 import { getPublicContent } from '@/lib/content';
+import { festivalEvent } from '@/lib/structured-data';
+import { JsonLd } from '@/components/JsonLd';
 import { Hero } from '@/components/home/Hero';
 import { WhatIs } from '@/components/home/WhatIs';
 import { TheNight } from '@/components/home/TheNight';
@@ -17,6 +19,7 @@ export default async function Home() {
   const content = await getPublicContent();
   return (
     <>
+      <JsonLd data={festivalEvent(content.artists)} />
       <Hero />
       <WhatIs />
       <TheNight />
