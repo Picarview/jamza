@@ -19,3 +19,9 @@ coverage/
 Thumbs.db
 *.zip
 assets-source/
+
+# Working documents never belong in public/
+public/**/*.docx
+public/**/*.doc
+public/**/*.xlsx
+public/**/*.pptx
