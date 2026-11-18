@@ -151,9 +151,9 @@ export function Hero() {
           A festive night of music, poetry and dance, celebrating women in the arts.
         </motion.p>
 
-        {/* When, where, how long, and the way in — set on a hairline, no glass (the nav already is). */}
+        {/* When, where, how long, and the way in. */}
         <motion.div
-          className="mt-10 grid gap-6 border-t border-cream/15 pt-6 sm:grid-cols-[auto_auto] sm:justify-start sm:gap-x-12 lg:grid-cols-[auto_auto_1fr] lg:items-center"
+          className="mt-10 grid gap-6 sm:grid-cols-[auto_auto] sm:justify-start sm:gap-x-12 lg:grid-cols-[auto_auto_1fr] lg:items-center"
           initial={reduce ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
