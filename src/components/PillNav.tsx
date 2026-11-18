@@ -8,6 +8,7 @@ import {
   Cancel01Icon,
   GiftIcon,
   HelpCircleIcon,
+  InstagramIcon,
   Location01Icon,
   Mail01Icon,
   Menu01Icon,
@@ -221,6 +222,14 @@ export function PillNav() {
               className="mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-5 py-3 font-semibold"
             >
               Read the {brand('JAMZA!')} 2025 report
+            </a>
+            <a
+              href={festival.instagram.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-5 py-3 font-semibold"
+            >
+              <Icon icon={InstagramIcon} size={18} /> {festival.instagram.handle}
             </a>
             <p className="mt-auto pt-10 text-lavender">
               {brand(festival.name)} · {festival.dateLabel}

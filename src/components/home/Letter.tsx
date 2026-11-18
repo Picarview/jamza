@@ -2,7 +2,8 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useActionState, useState } from 'react';
-import { Mail01Icon, SentIcon } from '@hugeicons/core-free-icons';
+import { InstagramIcon, Mail01Icon, SentIcon } from '@hugeicons/core-free-icons';
+import { festival } from '@/content/festival';
 import { sendLetter, type LetterState } from '@/app/actions';
 import { HalfMoons } from '../HalfMoons';
 import { Icon } from '../Icon';
@@ -33,9 +34,19 @@ export function Letter({ email }: { email: string }) {
             Want to perform, partner, or just say hello? Fill in the blanks, it goes straight to the
             team.
           </p>
-          <a href={`mailto:${email}`} className="glass mt-8 inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold">
-            <Icon icon={Mail01Icon} size={18} /> {email}
-          </a>
+          <div className="mt-8 flex flex-wrap gap-2">
+            <a href={`mailto:${email}`} className="glass inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold">
+              <Icon icon={Mail01Icon} size={18} /> {email}
+            </a>
+            <a
+              href={festival.instagram.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold"
+            >
+              <Icon icon={InstagramIcon} size={18} /> {festival.instagram.handle}
+            </a>
+          </div>
         </Reveal>
 
         <Reveal delay={0.1} rotate={-3}>

@@ -15,7 +15,7 @@ import { brand } from './Brand';
 
 export function Footer({ settings }: { settings: Settings }) {
   const socials = [
-    { label: 'Instagram', url: safeUrl(settings.instagram), icon: InstagramIcon },
+    { label: 'Instagram', url: safeUrl(settings.instagram) || festival.instagram.url, icon: InstagramIcon },
     { label: 'LinkedIn', url: safeUrl(settings.linkedin), icon: Linkedin01Icon },
   ].filter((s) => s.url);
 
