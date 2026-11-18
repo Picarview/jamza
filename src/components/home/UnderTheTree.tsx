@@ -3,9 +3,8 @@
 import { useRef, useState } from 'react';
 import { ArrowUpRight01Icon, Cancel01Icon, GiftIcon } from '@hugeicons/core-free-icons';
 import { safeUrl } from '@/lib/safe-url';
-import type { Partner, Post } from '@/lib/types';
+import type { Post } from '@/lib/types';
 import { Icon } from '../Icon';
-import { Marquee } from '../Marquee';
 import { Reveal } from '../Reveal';
 import { brand } from '../Brand';
 
@@ -16,8 +15,8 @@ function formatDate(date: string) {
   return Number.isNaN(d.getTime()) ? date : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-/** Announcements as gift tags hanging from a string; partners as the people who wrapped them. */
-export function UnderTheTree({ posts, partners }: { posts: Post[]; partners: Partner[] }) {
+/** Announcements as gift tags hanging from a string. */
+export function UnderTheTree({ posts }: { posts: Post[] }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState<Post | null>(null);
   const show = (post: Post) => {
@@ -87,30 +86,6 @@ export function UnderTheTree({ posts, partners }: { posts: Post[]; partners: Par
           )}
         </div>
       </div>
-
-      {partners.length > 0 && (
-        <div className="mt-28">
-          <p className="eyebrow text-center text-plum/60">Wrapped with love by</p>
-          <Marquee
-            duration={Math.max(20, partners.length * 6)}
-            className="mt-6 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]"
-            items={partners.map((p) => {
-              const url = safeUrl(p.url);
-              const inner = (
-                <span className="flex items-center gap-3 rounded-full border-2 border-plum/15 bg-white px-5 py-3 font-bold transition-colors hover:bg-plum hover:text-cream">
-                  {safeUrl(p.image) ? <img src={safeUrl(p.image)} alt="" className="h-8 w-auto max-w-24 object-contain" /> : null}
-                  {p.name}
-                </span>
-              );
-              return url ? (
-                <a href={url} target="_blank" rel="noopener noreferrer">{inner}</a>
-              ) : (
-                inner
-              );
-            })}
-          />
-        </div>
-      )}
 
       <dialog
         ref={dialog}

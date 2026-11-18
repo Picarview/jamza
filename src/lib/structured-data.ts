@@ -9,6 +9,7 @@ const organizer = {
   name: 'JAMZA!',
   url: siteUrl,
   logo: `${siteUrl}/icon.png`,
+  email: festival.email,
   sameAs,
 };
 

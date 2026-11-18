@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { festival } from '@/content/festival';
 import { getPublicClient } from './supabase';
 import type { Artist, Partner, Post, Settings, SiteContent } from './types';
 
@@ -9,7 +10,7 @@ const PAGE_SIZE = 500;
 export const defaultSettings: Settings = {
   id: 'site',
   title: 'jamza',
-  email: 'hello@jamza.com',
+  email: festival.email,
   instagram: '',
   linkedin: '',
 };
@@ -35,8 +36,11 @@ async function listRecords<T>(client: SupabaseClient, entity: string, publishedO
 /** Old databases may still carry the pre-rebrand demo values. */
 function normalizeSettings(settings: Settings): Settings {
   const title = settings.title?.trim().toLowerCase() === 'picarview' ? 'jamza' : settings.title;
+  const placeholder = ['hello@picarview.com', 'hello@jamza.com', 'example@jamza.com'];
   const email =
-    settings.email?.trim().toLowerCase() === 'hello@picarview.com' ? 'hello@jamza.com' : settings.email;
+    !settings.email?.trim() || placeholder.includes(settings.email.trim().toLowerCase())
+      ? festival.email
+      : settings.email;
   return { ...settings, title, email };
 }
 

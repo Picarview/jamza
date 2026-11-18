@@ -21,8 +21,7 @@ export function Footer({ settings }: { settings: Settings }) {
 
   return (
     <footer className="relative overflow-hidden bg-cream text-plum">
-      <HalfMoons className="absolute -right-10 top-0 w-72 opacity-90 sm:w-96" />
-      <HalfMoons className="absolute -left-16 bottom-0 w-64 opacity-90 sm:w-80" flip />
+      <HalfMoons className="absolute -right-10 top-0 hidden w-72 opacity-90 sm:block sm:w-96" />
       <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-24 sm:px-6">
         <p className="eyebrow text-tomato">See you on the dancefloor</p>
         <Link href="/#tickets" className="group mt-4 block w-fit">
@@ -79,6 +78,27 @@ export function Footer({ settings }: { settings: Settings }) {
               </a>
             ))}
           </div>
+        </div>
+
+        <div className="mt-10 flex flex-col gap-3 border-t border-plum/10 pt-6 text-sm text-plum/60 sm:flex-row sm:items-center sm:justify-between">
+          <a href="/#partners" className="w-fit transition-colors hover:text-plum">
+            Sponsors & partners
+          </a>
+          <p>
+            Designed by{' '}
+            {festival.credit.url ? (
+              <a
+                href={festival.credit.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-plum underline-offset-4 hover:underline"
+              >
+                {festival.credit.name}
+              </a>
+            ) : (
+              <span className="font-bold text-plum">{festival.credit.name}</span>
+            )}
+          </p>
         </div>
       </div>
     </footer>

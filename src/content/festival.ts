@@ -21,6 +21,9 @@ export const festival = {
     embed:
       'https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1sBeda%E2%80%99s+Pub+and+Events+Center,+49+Silver+St,+Accra!6i16',
   },
+  // Official contact. Placeholder addresses in the admin Settings fall back to this.
+  email: 'jamzafestival@gmail.com',
+  credit: { name: 'Picarview', url: null as string | null },
   // Official socials. A value set in the admin dashboard (Settings) takes priority.
   instagram: { url: 'https://www.instagram.com/jamza_festival/', handle: '@jamza_festival' },
   ticketUrl: null as string | null, // TODO: checkout link — until then, ticket buttons scroll to #tickets
