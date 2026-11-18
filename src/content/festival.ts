@@ -23,7 +23,7 @@ export const festival = {
   },
   // Official contact. Placeholder addresses in the admin Settings fall back to this.
   email: 'jamzafestival@gmail.com',
-  credit: { name: 'Picarview', url: null as string | null },
+  credit: { name: 'Picarview', url: 'https://picarview.com' as string | null },
   // Official socials. A value set in the admin dashboard (Settings) takes priority.
   instagram: { url: 'https://www.instagram.com/jamza_festival/', handle: '@jamza_festival' },
   ticketUrl: null as string | null, // TODO: checkout link — until then, ticket buttons scroll to #tickets
