@@ -65,6 +65,7 @@ export function festivalEvent(artists: LineupArtist[]) {
               performer: artists.map((a) => ({
                 '@type': a.name.includes('Band') ? 'MusicGroup' : 'Person',
                 name: a.name,
+                url: `${siteUrl}/${a.slug}`,
                 ...(a.url ? { sameAs: [a.url] } : {}),
               })),
             }

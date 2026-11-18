@@ -2,7 +2,8 @@
 
 import { AnimatePresence, motion, useMotionValue, useSpring } from 'motion/react';
 import { Fragment, useState } from 'react';
-import { InstagramIcon, SnowflakeIcon } from '@hugeicons/core-free-icons';
+import Link from 'next/link';
+import { ArrowUpRight01Icon, SnowflakeIcon } from '@hugeicons/core-free-icons';
 import type { LineupArtist } from '@/content/lineup';
 import { safeUrl } from '@/lib/safe-url';
 import { brand } from '../Brand';
@@ -20,7 +21,10 @@ const tiers = {
   },
 } as const;
 
-/** Festival-poster billing: main artists big, special guests below. Names link to Instagram. */
+/** Local photos (/images/…) or CMS uploads (https). */
+const photoOf = (a: LineupArtist) => (a.image.startsWith('/') ? a.image : safeUrl(a.image));
+
+/** Festival-poster billing: main artists big, special guests below. Each name opens the artist's page. */
 export function Lineup({ artists }: { artists: LineupArtist[] }) {
   const [hovered, setHovered] = useState<LineupArtist | null>(null);
   const x = useMotionValue(0);
@@ -34,12 +38,12 @@ export function Lineup({ artists }: { artists: LineupArtist[] }) {
   const billing = (list: LineupArtist[], tier: keyof typeof tiers) => (
     <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 sm:gap-x-5">
       {list.map((artist, i) => {
-        const url = safeUrl(artist.url);
+        const photo = photoOf(artist);
         const name = (
           <>
-            {safeUrl(artist.image) && (
+            {photo && (
               <img
-                src={safeUrl(artist.image)}
+                src={photo}
                 alt=""
                 loading="lazy"
                 className="mx-auto mb-2 size-14 rounded-full border-4 border-peach object-cover [@media(hover:hover)]:hidden"
@@ -48,18 +52,10 @@ export function Lineup({ artists }: { artists: LineupArtist[] }) {
             <span className={`headline block uppercase transition-colors duration-300 group-hover:text-ember ${tiers[tier].size}`}>
               {brand(artist.name)}
             </span>
-            {(artist.role || url) && (
-              <span className="mt-1 flex items-center justify-center gap-1.5 text-sm font-semibold text-lavender/75">
-                {artist.role && brand(artist.role)}
-                {url && (
-                  <Icon
-                    icon={InstagramIcon}
-                    size={14}
-                    className="opacity-60 transition-opacity group-hover:opacity-100"
-                  />
-                )}
-              </span>
-            )}
+            <span className="mt-1 flex items-center justify-center gap-1 text-sm font-semibold text-lavender/70">
+              {tier === 'guest' && artist.role && artist.role !== 'Special guest' ? brand(artist.role) : null}
+              <Icon icon={ArrowUpRight01Icon} size={13} className="opacity-50 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
+            </span>
           </>
         );
         return (
@@ -75,13 +71,9 @@ export function Lineup({ artists }: { artists: LineupArtist[] }) {
               className="group text-center"
             >
               <Reveal delay={Math.min(i, 8) * 0.04}>
-                {url ? (
-                  <a href={url} target="_blank" rel="noopener noreferrer" aria-label={`${artist.name} on Instagram`}>
-                    {name}
-                  </a>
-                ) : (
-                  name
-                )}
+                <Link href={`/${artist.slug}`} aria-label={`${artist.name} — ${artist.role}`}>
+                  {name}
+                </Link>
               </Reveal>
             </li>
           </Fragment>
@@ -138,9 +130,9 @@ export function Lineup({ artists }: { artists: LineupArtist[] }) {
         )}
       </div>
 
-      {/* Cursor-following portrait sticker (pointer devices, CMS photos only). */}
+      {/* Cursor-following portrait preview (pointer devices). */}
       <AnimatePresence>
-        {hovered && safeUrl(hovered.image) && (
+        {hovered && photoOf(hovered) && (
           <motion.div
             key={hovered.id}
             aria-hidden
@@ -151,7 +143,7 @@ export function Lineup({ artists }: { artists: LineupArtist[] }) {
             exit={{ opacity: 0, scale: 0.6, rotate: 8 }}
             transition={{ type: 'spring', stiffness: 400, damping: 26 }}
           >
-            <img src={safeUrl(hovered.image)} alt="" className="aspect-[4/5] w-full object-cover" />
+            <img src={photoOf(hovered)} alt="" className="aspect-[4/5] w-full object-cover" />
           </motion.div>
         )}
       </AnimatePresence>
