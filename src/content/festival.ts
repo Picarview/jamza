@@ -63,7 +63,7 @@ export const festival = {
   groupDeal: { minimum: 4, discount: 5, opensAt: '2026-11-26T00:00:00Z' },
 
   intro:
-    'JAMZA! FESTIVAL is a festive music experience: renditions of classic Christmas songs, original festive compositions, interludes, and artists’ own non-Christmas works.',
+    'JAMZA! FESTIVAL is a festive music experience: renditions of classic Christmas songs, original festive compositions, interludes, and artists’ own original works.',
   mission:
     'It exists to give female artists a stage, and audiences a lively, intimate, celebratory night. Different sounds, styles and levels of experience — one dynamic lineup.',
   grand: 'This year it’s more than a concert. It’s a Grand Festival, in three parts.',

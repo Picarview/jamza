@@ -47,7 +47,7 @@ export const report2025 = {
     {
       heading: 'Executive summary',
       body: [
-        'JAMZA! 2025 successfully delivered an all-female line up festive music experience, combining renditions of classic Christmas songs, original festive compositions, interludes, and artists’ personal non-Christmas works. The concert achieved its goal of creating a platform to showcase female artists while providing audience engagement through a lively, intimate, and celebratory atmosphere.',
+        'JAMZA! 2025 successfully delivered an all-female line up festive music experience, combining renditions of classic Christmas songs, original festive compositions, interludes, and artists’ personal original works. The concert achieved its goal of creating a platform to showcase female artists while providing audience engagement through a lively, intimate, and celebratory atmosphere.',
         'Approximately 102 people attended, including paying attendees and guests with complimentary tickets.',
       ],
     },
