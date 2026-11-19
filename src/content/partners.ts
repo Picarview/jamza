@@ -13,4 +13,5 @@ export const starterPartners = [
   { name: 'Stonehouse', image: '/images/partners/stonehouse.webp' },
   { name: 'Kobena Africa', image: '/images/partners/kobena-africa.webp' },
   { name: 'GTP', image: '/images/partners/gtp.webp', tagline: 'Life. Styled.' },
+  { name: 'Icewise', image: '/images/partners/icewise.webp' },
 ].map((p, i) => ({ id: `starter-${i}`, url: '', tagline: '', ...p }));
