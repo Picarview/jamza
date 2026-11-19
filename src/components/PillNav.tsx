@@ -6,35 +6,36 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   Cancel01Icon,
-  GiftIcon,
-  HelpCircleIcon,
+  HandshakeIcon,
   InstagramIcon,
   Location01Icon,
   Mail01Icon,
   Menu01Icon,
   Mic01Icon,
   PartyIcon,
-  SparklesIcon,
+  ShoppingBag01Icon,
   Ticket01Icon,
 } from '@hugeicons/core-free-icons';
 import { festival } from '@/content/festival';
 import { Icon } from './Icon';
 import { brand } from './Brand';
 
-/** The nav reads like the night's running order. */
+/** Home-page sections (scroll-tracked) mixed with full pages. */
 const stops = [
-  { id: 'tonight', label: 'Tonight', icon: SparklesIcon },
-  { id: 'what-is-jamza', label: 'What is JAMZA!?', icon: HelpCircleIcon },
   { id: 'the-night', label: 'The Night', icon: PartyIcon },
   { id: 'lineup', label: 'Lineup', icon: Mic01Icon },
-  { id: 'venue', label: 'Venue', icon: Location01Icon },
-  { id: 'under-the-tree', label: 'Under the Tree', icon: GiftIcon },
-  { id: 'letter', label: 'Write to us', icon: Mail01Icon },
-] as const;
+  { id: 'visit', label: 'Visit', icon: Location01Icon, page: '/visit' },
+  { id: 'shop', label: 'Shop', icon: ShoppingBag01Icon, page: '/shop' },
+  { id: 'join', label: 'Get involved', icon: HandshakeIcon, page: '/join' },
+  { id: 'letter', label: 'Contact', icon: Mail01Icon },
+] as { id: string; label: string; icon: typeof PartyIcon; page?: string }[];
+
+/** Section ids observed on the home page; the hero ("tonight") clears the highlight. */
+const tracked = ['tonight', ...stops.filter((s) => !s.page).map((s) => s.id)];
 
 /** Track which stop is under the middle of the viewport. */
 function useActiveStop(enabled: boolean) {
-  const [active, setActive] = useState<string>(enabled ? 'tonight' : '');
+  const [active, setActive] = useState<string>('');
   useEffect(() => {
     if (!enabled) {
       setActive('');
@@ -47,7 +48,7 @@ function useActiveStop(enabled: boolean) {
       },
       { rootMargin: '-45% 0px -50% 0px' },
     );
-    for (const { id } of stops) {
+    for (const id of tracked) {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     }
@@ -58,9 +59,12 @@ function useActiveStop(enabled: boolean) {
 
 export function PillNav() {
   // Section links live on the home page; elsewhere they navigate back to it.
-  const onHome = usePathname() === '/';
+  const pathname = usePathname();
+  const onHome = pathname === '/';
   const base = onHome ? '' : '/';
-  const active = useActiveStop(onHome);
+  const section = useActiveStop(onHome);
+  const active = stops.find((s) => s.page && pathname.startsWith(s.page))?.id ?? section;
+  const hrefOf = (stop: (typeof stops)[number]) => stop.page ?? `${base}#${stop.id}`;
   const [hovered, setHovered] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -121,8 +125,8 @@ export function PillNav() {
             {stops.map((stop) => (
               <li key={stop.id} className="relative">
                 <a
-                  href={`${base}#${stop.id}`}
-                  aria-current={active === stop.id ? 'location' : undefined}
+                  href={hrefOf(stop)}
+                  aria-current={active === stop.id ? (stop.page ? 'page' : 'location') : undefined}
                   onMouseEnter={() => setHovered(stop.id)}
                   onFocus={() => setHovered(stop.id)}
                   onBlur={() => setHovered(null)}
@@ -204,13 +208,13 @@ export function PillNav() {
                   transition={{ delay: 0.15 + i * 0.05, type: 'spring', stiffness: 300, damping: 22 }}
                 >
                   <a
-                    href={`${base}#${stop.id}`}
+                    href={hrefOf(stop)}
                     onClick={() => setOpen(false)}
                     className={`display flex items-center gap-3 rounded-full px-6 py-3 text-4xl ${
                       active === stop.id ? 'droplet text-plum' : 'glass text-cream'
                     }`}
                   >
-                    <span className="text-base font-sans font-bold opacity-60">0{i}</span>
+                    <span className="text-base font-sans font-bold opacity-60">0{i + 1}</span>
                     {brand(stop.label)}
                   </a>
                 </motion.li>

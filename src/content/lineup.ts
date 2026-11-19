@@ -20,7 +20,7 @@ export type LineupArtist = {
 };
 
 const ig = (handle: string) => `https://www.instagram.com/${handle}/`;
-const photo = (file: string, width: number, height: number): Photo => ({ src: `/images/artists/${file}.jpg`, width, height });
+const photo = (file: string, width: number, height: number): Photo => ({ src: `/images/artists/${file}.webp`, width, height });
 const accents = ['tomato', 'pine', 'plum', 'ember'] as const;
 
 type Entry = Omit<LineupArtist, 'id' | 'image' | 'url' | 'accent'>;

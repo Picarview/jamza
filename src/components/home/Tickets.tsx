@@ -51,7 +51,7 @@ function Stub({ ticket, index }: { ticket: Ticket; index: number }) {
           <span aria-hidden className="absolute inset-y-0 left-0 w-2 bg-lime [mask:radial-gradient(circle_3px_at_8px_6px,#0000_95%,#000)_0_0/8px_12px]" />
           <h3 className="display relative text-3xl leading-none text-lime">{ticket.name}</h3>
           <p className="relative mt-4 text-sm font-semibold text-cream/80">
-            {ended ? 'Ended' : left !== null ? `${left} day${left === 1 ? '' : 's'} left` : ticket.note}
+            {ended ? 'Ended' : left !== null && left <= 7 ? `${left} day${left === 1 ? '' : 's'} left` : ticket.note}
           </p>
         </div>
         {/* Perforation */}
@@ -99,8 +99,8 @@ export function Tickets() {
             <ul className="mt-8 flex flex-wrap gap-2 text-sm font-semibold">
               {[
                 { icon: Clock01Icon, text: `${festival.shortDate} · ${festival.hours}` },
-                { icon: Location01Icon, text: 'Beda’s, Old Ashongman', href: '#venue' },
-                { icon: Dress01Icon, text: `Dress code: ${festival.dressCode}` },
+                { icon: Location01Icon, text: 'Beda’s, Old Ashongman', href: '/visit' },
+                { icon: Dress01Icon, text: `Dress code: ${festival.dressCode}`, href: '/visit#dress-code' },
               ].map((item) => (
                 <li key={item.text}>
                   {item.href ? (
@@ -137,7 +137,8 @@ export function Tickets() {
           )}
         </div>
 
-        <ul className="mt-20 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <p className="mt-20 text-center font-semibold text-lime">{festival.allAccess}</p>
+        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((ticket, i) => (
             <li key={ticket.id}>
               <Stub ticket={ticket} index={i} />
@@ -155,7 +156,7 @@ export function Tickets() {
                 Rolling {festival.groupDeal.minimum}+ deep?
               </p>
               <p className="text-cream/75">
-                Groups of {festival.groupDeal.minimum} or more get {festival.groupDeal.discount}% off.
+                Groups of {festival.groupDeal.minimum} or more get {festival.groupDeal.discount}% off, from 26 November.
               </p>
             </div>
           </div>

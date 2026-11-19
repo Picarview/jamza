@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Coffee01Icon, Mic01Icon, PartyIcon } from '@hugeicons/core-free-icons';
+import { Clock01Icon, Coffee01Icon, Mic01Icon, PartyIcon } from '@hugeicons/core-free-icons';
 import { festival, type Act } from '@/content/festival';
 import { Icon } from '../Icon';
 import { Reveal } from '../Reveal';
@@ -39,8 +39,13 @@ function ActPanel({ act, index }: { act: Act; index: number }) {
       <div className={`relative mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 ${flip ? 'lg:[&>*:first-child]:order-2' : ''}`}>
         <div>
           <Reveal>
-            <p className="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold">
-              <Icon icon={t.icon} size={18} /> Act {act.numeral}
+            <p className="flex flex-wrap items-center gap-2 text-sm font-bold">
+              <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-2">
+                <Icon icon={t.icon} size={18} /> Act {act.numeral}
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 tabular-nums">
+                <Icon icon={Clock01Icon} size={16} /> {act.time}
+              </span>
             </p>
             <h3 id={`${act.id}-title`} className="display mt-6 text-[clamp(3.5rem,9vw,7rem)]">
               {act.title}

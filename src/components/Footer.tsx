@@ -99,9 +99,19 @@ export function Footer({ settings, partners }: { settings: Settings; partners: P
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-plum/10 pt-6 text-sm text-plum/60 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/partners" className="w-fit transition-colors hover:text-plum">
-            Partners
-          </Link>
+          <nav aria-label="Quick links" className="flex flex-wrap gap-x-5 gap-y-2">
+            {[
+              ['Tickets', '/#tickets'],
+              ['Plan your visit', '/visit'],
+              ['Shop', '/shop'],
+              ['Get involved', '/join'],
+              ['Partners', '/partners'],
+            ].map(([label, href]) => (
+              <Link key={href} href={href} className="transition-colors hover:text-plum">
+                {label}
+              </Link>
+            ))}
+          </nav>
           <p>
             Designed by{' '}
             {festival.credit.url ? (

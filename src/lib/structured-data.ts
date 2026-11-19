@@ -39,7 +39,7 @@ export function festivalEvent(artists: LineupArtist[]) {
         name: 'JAMZA! FESTIVAL 2026',
         description: siteDescription,
         url: siteUrl,
-        image: [`${siteUrl}/opengraph-image`, `${siteUrl}/images/tickets/poster.jpg`],
+        image: [`${siteUrl}/opengraph-image`, `${siteUrl}/images/tickets/poster.webp`],
         startDate: '2026-12-19T12:00:00+00:00',
         endDate: '2026-12-20T05:00:00+00:00',
         eventStatus: 'https://schema.org/EventScheduled',

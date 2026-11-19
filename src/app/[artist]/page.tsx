@@ -142,7 +142,7 @@ export default async function ArtistPage({ params }: Props) {
                   <Icon icon={Calendar03Icon} size={16} /> {festival.shortDate} · {festival.hours}
                 </li>
                 <li>
-                  <Link href="/#venue" className="glass flex items-center gap-2 rounded-full px-4 py-2">
+                  <Link href="/visit" className="glass flex items-center gap-2 rounded-full px-4 py-2">
                     <Icon icon={Location01Icon} size={16} /> Beda’s, Old Ashongman
                   </Link>
                 </li>

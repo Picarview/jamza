@@ -9,8 +9,8 @@ export const starterPartners = [
   { name: 'Beda’s Events Center', image: '/images/partners/bedas.webp', tagline: 'Our venue' },
   { name: 'PHYR3HAUS', image: '/images/partners/phyr3haus.webp' },
   { name: 'Afrodite Society', image: '/images/partners/afrodite-society.webp' },
-  { name: 'Breaktime_hq' },
+  { name: 'Breaktime_hq', image: '/images/partners/breaktime-hq.webp' },
   { name: 'Stonehouse', image: '/images/partners/stonehouse.webp' },
   { name: 'Kobena Africa', image: '/images/partners/kobena-africa.webp' },
   { name: 'GTP', image: '/images/partners/gtp.webp', tagline: 'Life. Styled.' },
-].map((p, i) => ({ id: `starter-${i}`, url: '', image: '', tagline: '', ...p }));
+].map((p, i) => ({ id: `starter-${i}`, url: '', tagline: '', ...p }));

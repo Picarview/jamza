@@ -7,7 +7,6 @@ import { WhatIs } from '@/components/home/WhatIs';
 import { TheNight } from '@/components/home/TheNight';
 import { Lineup } from '@/components/home/Lineup';
 import { StoryReel } from '@/components/home/StoryReel';
-import { Venue } from '@/components/home/Venue';
 import { Tickets } from '@/components/home/Tickets';
 import { LastTime } from '@/components/home/LastTime';
 import { UnderTheTree } from '@/components/home/UnderTheTree';
@@ -28,7 +27,6 @@ export default async function Home() {
       <Lineup artists={lineup} />
       <StoryReel />
       <LastTime />
-      <Venue />
       <UnderTheTree posts={content.posts} />
       <Letter email={content.settings.email} />
     </>
