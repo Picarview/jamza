@@ -29,15 +29,21 @@ supabase/                Database migrations — unchanged
 
 **Still to confirm** in `src/content/festival.ts`: start time, venue, city, ticket link.
 
-## CMS mapping
+## Supabase
 
-| Admin dashboard | On the site |
-| --------------- | ----------- |
-| Artists | The Lineup (poster billing; first artist is the headliner) |
-| Posts (Published) | Under the Tree (gift tags that open into a reader) |
-| Partners | “Wrapped with love by” ticker |
-| Settings: email, Instagram, LinkedIn | Letter section + footer |
-| Inbox | Messages from the “Write us a letter” form |
+**What's connected:** every form on the site (letter, shop & merch pre-orders, shuttle, vendor, sales team) lands in `jamza_messages`; voucher codes are checked and claimed by `jamza_redeem_voucher`; the admin at `/admin` signs in with Supabase Auth and manages the **Inbox** and **Vouchers**.
+
+**What's still static:** lineup, artist pages, partners, shop products and festival details come from `src/content/*`. They're already seeded in Supabase (`jamza_artists`, `jamza_partners`, `jamza_products`, `jamza_settings`); flip `LIVE_CONTENT` in `src/lib/content.ts` to read them from there.
+
+| File | Use |
+| ---- | --- |
+| `supabase/setup.sql` | **New project:** full schema + 2026 content in one run (SQL Editor) |
+| `supabase/migrations/` | History of the live project, in order |
+| `supabase/scripts/approve-admin.sql` | Give an Auth user admin access |
+
+**Admin access:** create the user in Supabase → Authentication → Users, put their email in `approve-admin.sql`, run it. Anyone else who signs in sees “Not on the list yet”.
+
+Security is enforced by row-level security, not the app: visitors can only call the submit/redeem functions and read published content; only accounts in `jamza_admins` can read messages or vouchers.
 
 ## SEO
 

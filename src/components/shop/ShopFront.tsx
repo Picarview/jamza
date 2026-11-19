@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Add01Icon, MinusSignIcon, PlusSignIcon, Tick02Icon } from '@hugeicons/core-free-icons';
 import { festival } from '@/content/festival';
-import { shopProducts, type Product } from '@/content/shop';
+import type { Product } from '@/content/shop';
 import { FormCard } from '../FormCard';
 import { Icon } from '../Icon';
 import { Reveal } from '../Reveal';
@@ -19,15 +19,15 @@ const copy = {
 };
 
 /** Product window + pre-order form for one group: the JAMZA! shop (/shop) or festival merch (/merch). */
-export function ShopFront({ group, note }: { group: 'shop' | 'merch'; note: string }) {
+export function ShopFront({ group, note, products }: { group: 'shop' | 'merch'; note: string; products: Product[] }) {
   const [cart, setCart] = useState<Cart>({});
-  const line = (id: string) => cart[id] ?? { qty: 0, size: shopProducts.find((p) => p.id === id)?.sizes?.[1] };
+  const line = (id: string) => cart[id] ?? { qty: 0, size: products.find((p) => p.id === id)?.sizes?.[1] };
   const setQty = (id: string, qty: number) =>
     setCart((c) => ({ ...c, [id]: { ...(c[id] ?? line(id)), qty: Math.max(0, Math.min(50, qty)) } }));
   const setSize = (id: string, size: string) => setCart((c) => ({ ...c, [id]: { ...(c[id] ?? line(id)), size } }));
   const total = Object.values(cart).reduce((a, l) => a + l.qty, 0);
 
-  const items = shopProducts.filter((p) => p.group === group);
+  const items = products.filter((p) => p.group === group);
 
   const basket = (
     <fieldset className="mb-8">

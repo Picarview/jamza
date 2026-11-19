@@ -59,7 +59,7 @@ function useActiveStop(enabled: boolean) {
   return active;
 }
 
-export function PillNav() {
+export function PillNav({ ticketUrl }: { ticketUrl: string | null }) {
   // Section links live on the home page; elsewhere they navigate back to it.
   const pathname = usePathname();
   const onHome = pathname === '/';
@@ -90,7 +90,7 @@ export function PillNav() {
   }, [open]);
 
   const highlight = hovered ?? active;
-  const ticketHref = festival.ticketUrl ?? `${base}#tickets`;
+  const ticketHref = ticketUrl ?? `${base}#tickets`;
 
   return (
     <>

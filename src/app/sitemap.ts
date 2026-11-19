@@ -1,8 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { lineup } from '@/content/lineup';
+import { getPublicContent } from '@/lib/content';
 import { siteUrl } from '@/lib/site';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { lineup } = await getPublicContent();
   return [
     { url: `${siteUrl}/`, changeFrequency: 'daily', priority: 1, lastModified: new Date() },
     ...['/visit', '/shop', '/merch', '/join'].map((path) => ({ url: `${siteUrl}${path}`, changeFrequency: 'weekly' as const, priority: 0.8, lastModified: new Date() })),

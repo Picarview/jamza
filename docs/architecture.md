@@ -55,7 +55,7 @@ jamza/
 
 The public entry creates a client that never restores an admin session. It reads artists, partners, settings, and explicitly published posts. Database policies independently enforce publication visibility.
 
-The admin entry restores an authenticated session, checks membership in `picarview_admins`, and loads private data only after approval. UI actions produce a single record change. The service sends only modified fields, with the previous update timestamp as a condition. The local state changes only after the server returns a row.
+The admin entry restores an authenticated session, checks membership in `jamza_admins`, and loads private data only after approval. UI actions produce a single record change. The service sends only modified fields, with the previous update timestamp as a condition. The local state changes only after the server returns a row.
 
 The content service requests records in pages so collections larger than the API's default limit are not silently truncated. It requests a stable timestamp-and-ID ordering. A visitor's contact form calls a validating SQL function; it never receives inbox rows.
 

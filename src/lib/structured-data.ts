@@ -27,7 +27,7 @@ const place = {
 };
 
 /** MusicEvent for search results (date, venue, ticket prices). */
-export function festivalEvent(artists: LineupArtist[]) {
+export function festivalEvent(artists: LineupArtist[], ticketUrl: string | null) {
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -56,7 +56,7 @@ export function festivalEvent(artists: LineupArtist[]) {
             price: t.price,
             priceCurrency: 'GHS',
             availability: 'https://schema.org/InStock',
-            url: festival.ticketUrl ?? `${siteUrl}/#tickets`,
+            url: ticketUrl ?? `${siteUrl}/#tickets`,
             validFrom: '2026-11-01T00:00:00+00:00',
             ...(t.endsAt ? { validThrough: t.endsAt } : {}),
           })),

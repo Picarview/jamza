@@ -17,25 +17,29 @@ import {
   Ticket02Icon,
 } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/Icon';
-import { AdminProvider, useAdmin } from './store';
+import { SignIn } from './SignIn';
+import { AdminProvider, LIVE_COLLECTIONS, useAdmin } from './store';
+import type { CollectionKey } from './types';
 
-const nav = [
+// `data` = the collection a screen edits. Screens whose data isn't live yet are hidden when signed in to Supabase.
+const nav: { href: string; label: string; icon: typeof InboxIcon; data?: CollectionKey | 'settings' }[] = [
   { href: '/admin', label: 'Overview', icon: DashboardSquare01Icon },
-  { href: '/admin/inbox', label: 'Inbox', icon: InboxIcon },
-  { href: '/admin/vouchers', label: 'Vouchers', icon: Ticket02Icon },
-  { href: '/admin/shop', label: 'Shop', icon: ShoppingBag01Icon },
-  { href: '/admin/lineup', label: 'Lineup', icon: Mic01Icon },
-  { href: '/admin/partners', label: 'Partners', icon: HandshakeIcon },
-  { href: '/admin/settings', label: 'Settings', icon: Settings01Icon },
+  { href: '/admin/inbox', label: 'Inbox', icon: InboxIcon, data: 'messages' },
+  { href: '/admin/vouchers', label: 'Vouchers', icon: Ticket02Icon, data: 'vouchers' },
+  { href: '/admin/shop', label: 'Shop', icon: ShoppingBag01Icon, data: 'products' },
+  { href: '/admin/lineup', label: 'Lineup', icon: Mic01Icon, data: 'artists' },
+  { href: '/admin/partners', label: 'Partners', icon: HandshakeIcon, data: 'partners' },
+  { href: '/admin/settings', label: 'Settings', icon: Settings01Icon, data: 'settings' },
 ];
 
 function Frame({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { db, mode, reset } = useAdmin();
+  const { db, mode, reset, auth, signOut } = useAdmin();
+  const visible = nav.filter((n) => mode === 'demo' || !n.data || LIVE_COLLECTIONS.includes(n.data as CollectionKey));
   const unread = db.messages.filter((m) => m.status === 'new').length;
   const isActive = (href: string) => (href === '/admin' ? pathname === href : pathname.startsWith(href));
 
-  const links = (where: 'side' | 'top') => nav.map((item) => {
+  const links = (where: 'side' | 'top') => visible.map((item) => {
     const active = isActive(item.href);
     return (
       <Link
@@ -78,6 +82,19 @@ function Frame({ children }: { children: ReactNode }) {
                 </button>
               </div>
             )}
+            {mode === 'supabase' && auth.status === 'ready' && (
+              <div className="rounded-2xl bg-black/25 p-3">
+                <p className="flex items-center gap-2 text-xs font-bold text-lime">
+                  <span className="size-2 rounded-full bg-lime" /> Live · Supabase
+                </p>
+                <p className="mt-1 truncate text-xs text-cream/70" title={auth.email}>
+                  {auth.email}
+                </p>
+                <button type="button" onClick={signOut} className="mt-2 text-xs font-semibold text-cream/70 hover:text-cream">
+                  Sign out
+                </button>
+              </div>
+            )}
             <Link href="/" target="_blank" className="flex items-center gap-2 px-1 py-2 font-semibold text-cream/70 hover:text-cream">
               View site <Icon icon={ArrowUpRight01Icon} size={16} />
             </Link>
@@ -106,10 +123,15 @@ function Frame({ children }: { children: ReactNode }) {
   );
 }
 
+function Gate({ children }: { children: ReactNode }) {
+  const { auth } = useAdmin();
+  return auth.status === 'ready' ? <Frame>{children}</Frame> : <SignIn />;
+}
+
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <AdminProvider>
-      <Frame>{children}</Frame>
+      <Gate>{children}</Gate>
     </AdminProvider>
   );
 }

@@ -1,49 +1,37 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { seed } from './seed';
-import type { CollectionKey, Db, Row, Settings } from './types';
+import { adminClient, explain, fromMessage, fromVoucher, toMessage, toVoucher } from './supabase';
+import type { CollectionKey, Db, Message, Row, Settings, Voucher } from './types';
 
 /**
  * Admin data store.
  *
- * Backend today: DEMO — seeded from the site's content files and saved in this browser only.
- * To connect Supabase, replace the four functions in `backend` with table reads/writes;
- * every screen talks to `useAdmin()` and stays the same.
+ * - Supabase mode (env configured): sign-in required; Inbox and Vouchers read and write the live
+ *   jamza_messages / jamza_vouchers tables. Shop, Lineup, Partners and Settings stay on the site's
+ *   content files while the public site is static, so they're not editable here yet.
+ * - Demo mode (no env): everything is sample data saved in this browser.
  */
-const KEY = 'jamza.admin.demo.v1';
+const DEMO_KEY = 'jamza.admin.demo.v1';
+export const LIVE_COLLECTIONS: CollectionKey[] = ['messages', 'vouchers'];
 
-const backend = {
-  async load(): Promise<Db> {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) return { ...seed(), ...JSON.parse(raw) };
-    } catch {
-      /* private mode or corrupt data: fall back to seed */
-    }
-    return seed();
-  },
-  async persist(db: Db) {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(db));
-    } catch {
-      /* storage unavailable: changes last for this session only */
-    }
-  },
-  async reset(): Promise<Db> {
-    try {
-      localStorage.removeItem(KEY);
-    } catch {}
-    return seed();
-  },
-};
+export const newId = () => crypto.randomUUID();
 
-export const newId = () => Math.random().toString(36).slice(2, 10);
+type AuthState =
+  | { status: 'loading' }
+  | { status: 'signed-out'; error?: string }
+  | { status: 'not-admin'; email: string }
+  | { status: 'ready'; email: string };
 
 type Admin = {
   db: Db;
   ready: boolean;
   mode: 'demo' | 'supabase';
+  auth: AuthState;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  refresh: () => Promise<void>;
   save: <K extends CollectionKey>(key: K, row: Row<K>) => Promise<void>;
   remove: (key: CollectionKey, id: string) => Promise<void>;
   saveSettings: (settings: Settings) => Promise<void>;
@@ -52,49 +40,168 @@ type Admin = {
 
 const Ctx = createContext<Admin | null>(null);
 
+const PAGE = 500;
+async function loadAll(table: string, order: string) {
+  const supabase = adminClient()!;
+  const rows: Record<string, unknown>[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase.from(table).select('*').order(order, { ascending: false }).range(from, from + PAGE - 1);
+    if (error) throw new Error(explain(error));
+    rows.push(...data);
+    if (data.length < PAGE) return rows;
+  }
+}
+
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const [db, setDb] = useState<Db>(seed);
+  const supabase = adminClient();
+  const mode: Admin['mode'] = supabase ? 'supabase' : 'demo';
+  const [db, setDb] = useState<Db>(() => (supabase ? { ...seed(), messages: [], vouchers: [] } : seed()));
   const [ready, setReady] = useState(false);
+  const [auth, setAuth] = useState<AuthState>(supabase ? { status: 'loading' } : { status: 'ready', email: 'demo' });
+  const loadedFor = useRef<string | null>(null);
+
+  /* ----- Demo mode ----- */
+  useEffect(() => {
+    if (mode !== 'demo') return;
+    try {
+      const raw = localStorage.getItem(DEMO_KEY);
+      if (raw) setDb({ ...seed(), ...JSON.parse(raw) });
+    } catch {
+      /* private mode: keep seed */
+    }
+    setReady(true);
+  }, [mode]);
+
+  const persistDemo = (next: Db) => {
+    try {
+      localStorage.setItem(DEMO_KEY, JSON.stringify(next));
+    } catch {}
+  };
+
+  /* ----- Supabase mode: session → allowlist → data ----- */
+  const load = useCallback(async () => {
+    const [messages, vouchers] = await Promise.all([loadAll('jamza_messages', 'date'), loadAll('jamza_vouchers', 'created_at')]);
+    setDb((d) => ({ ...d, messages: messages.map(toMessage), vouchers: vouchers.map(toVoucher) }));
+    setReady(true);
+  }, []);
+
+  const checkSession = useCallback(async () => {
+    if (!supabase) return;
+    const { data } = await supabase.auth.getSession();
+    const user = data.session?.user;
+    if (!user) {
+      loadedFor.current = null;
+      setReady(false);
+      setAuth({ status: 'signed-out' });
+      return;
+    }
+    const { data: isAdmin, error } = await supabase.rpc('jamza_is_admin');
+    if (error || !isAdmin) {
+      setAuth(error ? { status: 'signed-out', error: explain(error) } : { status: 'not-admin', email: user.email ?? '' });
+      return;
+    }
+    setAuth({ status: 'ready', email: user.email ?? '' });
+    if (loadedFor.current !== user.id) {
+      loadedFor.current = user.id;
+      try {
+        await load();
+      } catch (e) {
+        setAuth({ status: 'signed-out', error: (e as Error).message });
+      }
+    }
+  }, [supabase, load]);
 
   useEffect(() => {
-    backend.load().then((loaded) => {
-      setDb(loaded);
-      setReady(true);
+    if (!supabase) return;
+    void checkSession();
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') void checkSession();
     });
-  }, []);
+    return () => data.subscription.unsubscribe();
+  }, [supabase, checkSession]);
 
-  const commit = useCallback((next: (db: Db) => Db) => {
-    setDb((current) => {
-      const updated = next(current);
-      void backend.persist(updated);
-      return updated;
-    });
-  }, []);
+  // Keep the inbox fresh: reload when the tab regains focus and every two minutes.
+  useEffect(() => {
+    if (mode !== 'supabase' || auth.status !== 'ready') return;
+    const reload = () => document.visibilityState === 'visible' && load().catch(() => {});
+    window.addEventListener('focus', reload);
+    const id = setInterval(reload, 120_000);
+    return () => {
+      window.removeEventListener('focus', reload);
+      clearInterval(id);
+    };
+  }, [mode, auth.status, load]);
 
-  const value = useMemo<Admin>(
-    () => ({
+  const value = useMemo<Admin>(() => {
+    const local = <K extends CollectionKey>(key: K, row: Row<K>) =>
+      setDb((d) => {
+        const list = d[key] as Row<K>[];
+        const next = { ...d, [key]: list.some((r) => r.id === row.id) ? list.map((r) => (r.id === row.id ? row : r)) : [row, ...list] };
+        if (mode === 'demo') persistDemo(next);
+        return next;
+      });
+
+    return {
       db,
       ready,
-      mode: 'demo',
+      mode,
+      auth,
+      async signIn(email, password) {
+        if (!supabase) return;
+        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+        if (error) setAuth({ status: 'signed-out', error: error.message.includes('Invalid login') ? 'Wrong email or password.' : explain(error) });
+      },
+      async signOut() {
+        await supabase?.auth.signOut();
+      },
+      async refresh() {
+        if (mode === 'supabase') await load();
+      },
       async save(key, row) {
-        commit((d) => {
-          const list = d[key] as Row<typeof key>[];
-          const exists = list.some((r) => r.id === row.id);
-          return { ...d, [key]: exists ? list.map((r) => (r.id === row.id ? row : r)) : [row, ...list] };
-        });
+        if (mode === 'demo') return local(key, row);
+        if (key === 'messages') {
+          const m = row as Message;
+          const { error } = await supabase!.from('jamza_messages').update(fromMessage(m)).eq('id', m.id);
+          if (error) throw new Error(explain(error));
+          return local(key, row);
+        }
+        if (key === 'vouchers') {
+          const { data, error } = await supabase!.from('jamza_vouchers').upsert(fromVoucher(row as Voucher)).select().single();
+          if (error) throw new Error(explain(error));
+          return local(key, toVoucher(data) as Row<typeof key>);
+        }
+        throw new Error('This section isn’t connected yet — it still comes from the site’s content files.');
       },
       async remove(key, id) {
-        commit((d) => ({ ...d, [key]: (d[key] as { id: string }[]).filter((r) => r.id !== id) }));
+        if (mode === 'supabase') {
+          const table = key === 'messages' ? 'jamza_messages' : key === 'vouchers' ? 'jamza_vouchers' : null;
+          if (!table) throw new Error('This section isn’t connected yet.');
+          const { error } = await supabase!.from(table).delete().eq('id', id);
+          if (error) throw new Error(explain(error));
+        }
+        setDb((d) => {
+          const next = { ...d, [key]: (d[key] as { id: string }[]).filter((r) => r.id !== id) };
+          if (mode === 'demo') persistDemo(next);
+          return next;
+        });
       },
       async saveSettings(settings) {
-        commit((d) => ({ ...d, settings }));
+        if (mode === 'supabase') throw new Error('Settings aren’t connected yet.');
+        setDb((d) => {
+          const next = { ...d, settings };
+          persistDemo(next);
+          return next;
+        });
       },
       async reset() {
-        setDb(await backend.reset());
+        if (mode !== 'demo') return;
+        try {
+          localStorage.removeItem(DEMO_KEY);
+        } catch {}
+        setDb(seed());
       },
-    }),
-    [db, ready, commit],
-  );
+    };
+  }, [db, ready, mode, auth, supabase, load]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

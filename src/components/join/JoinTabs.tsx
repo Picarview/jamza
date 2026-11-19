@@ -15,7 +15,8 @@ const tabs = [
 
 type Tab = (typeof tabs)[number]['id'];
 
-export function JoinTabs() {
+export function JoinTabs({ vendorDeadline }: { vendorDeadline: string }) {
+  const deadlineLabel = new Date(vendorDeadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
   const [tab, setTab] = useState<Tab>('sales-team');
 
   // Deep links: /join#vendors opens the vendor tab.
@@ -29,11 +30,11 @@ export function JoinTabs() {
     return () => window.removeEventListener('hashchange', fromHash);
   }, []);
 
-  const vendorsClosed = Date.now() > new Date(vendors.deadline).getTime();
+  const vendorsClosed = Date.now() > new Date(vendorDeadline).getTime();
   const info =
     tab === 'sales-team'
       ? { title: `Earn ${salesTeam.commission}% on every ticket`, pitch: salesTeam.pitch, points: salesTeam.points }
-      : { title: 'Sell at the marketplace', pitch: vendors.pitch, points: [`Apply by ${vendors.deadlineLabel}.`, ...vendors.points] };
+      : { title: 'Sell at the marketplace', pitch: vendors.pitch, points: [`Apply by ${deadlineLabel}.`, ...vendors.points] };
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -87,12 +88,12 @@ export function JoinTabs() {
             <FormCard
               kind="vendor"
               submitLabel="Send application"
-              note={`Applications close ${vendors.deadlineLabel}.`}
+              note={`Applications close ${deadlineLabel}.`}
               disabled={
                 vendorsClosed ? (
                   <>
                     <p className="display text-4xl">Applications are closed</p>
-                    <p className="mt-3 max-w-sm text-plum/70">Vendor registration closed on {vendors.deadlineLabel}. Selected vendors will hear from us by email.</p>
+                    <p className="mt-3 max-w-sm text-plum/70">Vendor registration closed on {deadlineLabel}. Selected vendors will hear from us by email.</p>
                   </>
                 ) : undefined
               }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PageHeader } from '@/components/PageHeader';
 import { ShopFront } from '@/components/shop/ShopFront';
 import { shop } from '@/content/shop';
+import { getPublicContent } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -19,7 +20,8 @@ const steps = [
   ['Collect', 'Pick it up at the shop stand on 19 December.'],
 ];
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const { products, settings } = await getPublicContent();
   return (
     <>
       <PageHeader tone="tomato" eyebrow="JAMZA! shop" title="Shop the night" intro="Official JAMZA! tees in the festival colours. Pre-order now and skip the queue on festival day.">
@@ -33,10 +35,10 @@ export default function ShopPage() {
           ))}
         </ol>
         <p className="mt-6 text-sm text-cream/60">
-          {shop.deadline ? `Pre-orders close ${shop.deadline}.` : 'The pre-order deadline will be announced soon.'}
+          {settings.shopDeadline ? `Pre-orders close ${settings.shopDeadline}.` : 'The pre-order deadline will be announced soon.'}
         </p>
       </PageHeader>
-      <ShopFront group="shop" note="No payment now — we’ll email you the total and payment details." />
+      <ShopFront group="shop" products={products} note="No payment now — we’ll email you the total and payment details." />
     </>
   );
 }

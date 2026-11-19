@@ -40,7 +40,7 @@ export function planChange(before, after) {
 }
 
 export async function persistChange(client, change) {
-  const table = client.from(`picarview_${change.key}`);
+  const table = client.from(`jamza_${change.key}`);
   let query =
     change.kind === 'insert'
       ? table.insert(change.row)

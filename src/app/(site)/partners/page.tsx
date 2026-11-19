@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Partners } from '@/components/home/Partners';
-import { starterPartners } from '@/content/partners';
 import { getPublicContent } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/site';
 
@@ -16,5 +15,5 @@ export const metadata: Metadata = {
 
 export default async function PartnersPage() {
   const { partners } = await getPublicContent();
-  return <Partners partners={partners.length ? partners : starterPartners} />;
+  return <Partners partners={partners} />;
 }

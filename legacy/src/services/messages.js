@@ -18,7 +18,7 @@ export function normalizeContact(input) {
 export async function submitContact(client, input) {
   const values = normalizeContact(input);
   if (!client) throw new Error('The message service is unavailable.');
-  const { error } = await client.rpc('picarview_submit_message', {
+  const { error } = await client.rpc('jamza_submit_message', {
     p_name: values.name,
     p_email: values.email,
     p_subject: values.subject,

@@ -61,6 +61,21 @@ export function Button({
   );
 }
 
+export function NotLiveYet({ title, what }: { title: string; what: string }) {
+  return (
+    <>
+      <PageTitle title={title} />
+      <Card className="mt-8 p-8">
+        <p className="display text-3xl">Coming from the site for now</p>
+        <p className="mt-3 max-w-xl text-plum/70">
+          {what} still come from the site’s content files while the public site is static. They’re already in Supabase, so
+          this section can be switched on whenever the site starts reading them.
+        </p>
+      </Card>
+    </>
+  );
+}
+
 /* ---------- Schema-driven editor ---------- */
 
 export type FieldDef = {
@@ -245,8 +260,12 @@ export function CollectionTable<T extends { id: string }>({
     }
     const problem = validate?.(editing, rows);
     if (problem) return setError(problem);
-    await onSave(editing);
-    setEditing(null);
+    try {
+      await onSave(editing);
+      setEditing(null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   };
 
   return (
@@ -310,8 +329,12 @@ export function CollectionTable<T extends { id: string }>({
                 variant="danger"
                 onClick={async () => {
                   if (confirm(`Delete this ${noun}? This can’t be undone.`)) {
-                    await onDelete(editing.id);
-                    setEditing(null);
+                    try {
+                      await onDelete(editing.id);
+                      setEditing(null);
+                    } catch (e) {
+                      setError((e as Error).message);
+                    }
                   }
                 }}
               >

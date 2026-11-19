@@ -9,7 +9,7 @@ async function listRecords(client, entity, { publishedOnly = false } = {}) {
   const records = [];
   for (let start = 0; ; start += PAGE_SIZE) {
     let query = client
-      .from(`picarview_${entity}`)
+      .from(`jamza_${entity}`)
       .select('*')
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
@@ -31,7 +31,7 @@ async function loadContent(client, { admin = false } = {}) {
     Promise.all(
       keys.map((key) => listRecords(client, key, { publishedOnly: key === 'posts' && !admin })),
     ),
-    client.from('picarview_settings').select('*').eq('id', 'site').single(),
+    client.from('jamza_settings').select('*').eq('id', 'site').single(),
   ]);
   if (settings.error) throw settings.error;
   const collections = Object.fromEntries(keys.map((key, index) => [key, rows[index]]));

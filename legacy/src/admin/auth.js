@@ -21,7 +21,7 @@ export function setupAuth({ db, loadData, go, toast }) {
       return;
     }
     const { data: adminRecord, error } = await db
-      .from('picarview_admins')
+      .from('jamza_admins')
       .select('user_id')
       .eq('user_id', userData.user.id)
       .maybeSingle();
@@ -29,7 +29,7 @@ export function setupAuth({ db, loadData, go, toast }) {
     if (error) throw error;
     if (!adminRecord)
       throw Error(
-        'This account is not an approved administrator. Add its user ID to picarview_admins in Supabase.',
+        'This account is not an approved administrator. Add its user ID to jamza_admins in Supabase.',
       );
     state.authorized = true;
     await loadData();

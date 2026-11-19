@@ -5,7 +5,7 @@ import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/Icon';
 import { useAdmin } from '../store';
 import type { Settings } from '../types';
-import { Button, Card, Fields, PageTitle, type FieldDef } from '../ui';
+import { Button, Card, Fields, NotLiveYet, PageTitle, type FieldDef } from '../ui';
 
 const groups: { title: string; fields: FieldDef[] }[] = [
   {
@@ -34,11 +34,12 @@ const groups: { title: string; fields: FieldDef[] }[] = [
 ];
 
 export function SettingsScreen() {
-  const { db, saveSettings } = useAdmin();
+  const { db, saveSettings, mode } = useAdmin();
   const [draft, setDraft] = useState<Settings>(db.settings);
   const [saved, setSaved] = useState(false);
   useEffect(() => setDraft(db.settings), [db.settings]);
   const dirty = JSON.stringify(draft) !== JSON.stringify(db.settings);
+  if (mode === 'supabase') return <NotLiveYet title="Settings" what="Festival details" />;
 
   return (
     <form

@@ -3,7 +3,7 @@
 import { VOUCHER_PATTERN } from '@/lib/forms';
 import { newId, useAdmin } from '../store';
 import type { Artist, Partner, Product, Voucher } from '../types';
-import { Badge, CollectionTable, PageTitle, randomCode, type FieldDef } from '../ui';
+import { Badge, CollectionTable, NotLiveYet, PageTitle, randomCode, type FieldDef } from '../ui';
 
 const visibleField: FieldDef = { name: 'visible', label: 'Visible on the site', type: 'checkbox', placeholder: 'Show it' };
 const thumb = (src: string, round = false) =>
@@ -72,7 +72,8 @@ export function Vouchers() {
 /* ---------- Shop ---------- */
 
 export function Shop() {
-  const { db, save, remove } = useAdmin();
+  const { db, save, remove, mode } = useAdmin();
+  if (mode === 'supabase') return <NotLiveYet title="Shop" what="Products" />;
   return (
     <>
       <PageTitle title="Shop" intro="JAMZA! shop items and festival merch. Pre-orders arrive in the inbox." />
@@ -124,7 +125,8 @@ const slugify = (s: string) =>
     .replace(/^-|-$/g, '');
 
 export function Lineup() {
-  const { db, save, remove } = useAdmin();
+  const { db, save, remove, mode } = useAdmin();
+  if (mode === 'supabase') return <NotLiveYet title="Lineup" what="Artists" />;
   return (
     <>
       <PageTitle title="Lineup" intro="Every artist gets their own page at jamzafestival.com/their-name." />
@@ -175,7 +177,8 @@ export function Lineup() {
 /* ---------- Partners ---------- */
 
 export function Partners() {
-  const { db, save, remove } = useAdmin();
+  const { db, save, remove, mode } = useAdmin();
+  if (mode === 'supabase') return <NotLiveYet title="Partners" what="Partners" />;
   return (
     <>
       <PageTitle title="Partners" intro="Shown on the partners page and in the footer of every page." />

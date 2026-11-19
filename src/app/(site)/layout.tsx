@@ -1,7 +1,9 @@
 import { Footer } from '@/components/Footer';
 import { PillNav } from '@/components/PillNav';
-import { starterPartners } from '@/content/partners';
 import { getPublicContent } from '@/lib/content';
+
+// Content comes from Supabase; re-check at most once a minute (admin saves refresh it immediately).
+export const revalidate = 60;
 
 /** Public site chrome: pill nav, main, footer. The admin has its own layout. */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -14,9 +16,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       >
         Skip to content
       </a>
-      <PillNav />
+      <PillNav ticketUrl={settings.ticketUrl} />
       <main id="main">{children}</main>
-      <Footer settings={settings} partners={partners.length ? partners : starterPartners} />
+      <Footer settings={settings} partners={partners} />
     </>
   );
 }

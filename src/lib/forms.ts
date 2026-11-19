@@ -1,5 +1,5 @@
 /**
- * Forms that land in the admin inbox through the existing rate-limited `picarview_submit_message`
+ * Forms that land in the admin inbox through the existing rate-limited `jamza_submit_message`
  * function: no new tables needed. Each form is defined once here and used by both the page
  * (to render fields) and the server action (to validate and compose the message).
  */

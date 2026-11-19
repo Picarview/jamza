@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { ShopFront } from '@/components/shop/ShopFront';
-import { shop, shopProducts } from '@/content/shop';
+import { shop } from '@/content/shop';
+import { getPublicContent } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
   openGraph: { ...baseOpenGraph, url: '/merch', title: 'JAMZA! festival merch — pre-order now' },
 };
 
-export default function MerchPage() {
+export default async function MerchPage() {
+  const { products, settings } = await getPublicContent();
   return (
     <>
       <PageHeader
@@ -22,7 +24,7 @@ export default function MerchPage() {
         intro="Cakes, bracelets, necklaces and glow sticks for the night. Pre-order now and pick them up on 19 December."
       >
         <ul className="mt-10 flex flex-wrap gap-3">
-          {shopProducts
+          {products
             .filter((p) => p.group === 'merch')
             .map((p) => (
               <li key={p.id} className="glass flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 font-semibold">
@@ -32,11 +34,11 @@ export default function MerchPage() {
             ))}
         </ul>
         <p className="mt-6 text-sm text-cream/60">
-          {shop.deadline ? `Pre-orders close ${shop.deadline}. ` : 'The pre-order deadline will be announced soon. '}
+          {settings.shopDeadline ? `Pre-orders close ${settings.shopDeadline}. ` : 'The pre-order deadline will be announced soon. '}
           {shop.collection}
         </p>
       </PageHeader>
-      <ShopFront group="merch" note="No payment now — we’ll email you the total and payment details." />
+      <ShopFront group="merch" products={products} note="No payment now — we’ll email you the total and payment details." />
     </>
   );
 }

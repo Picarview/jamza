@@ -9,7 +9,7 @@ import { useAdmin } from '../store';
 import { Badge, Card, PageTitle } from '../ui';
 
 export function Overview() {
-  const { db } = useAdmin();
+  const { db, mode } = useAdmin();
   const days = Math.max(0, Math.ceil((new Date(festival.startsAt).getTime() - Date.now()) / 86_400_000));
   const unread = db.messages.filter((m) => m.status === 'new');
   const preorders = db.messages.filter((m) => m.kind === 'shop' || m.kind === 'merch');
@@ -20,7 +20,9 @@ export function Overview() {
     { label: 'New in inbox', value: unread.length, href: '/admin/inbox', icon: InboxIcon, accent: 'bg-tomato' },
     { label: 'Shop & merch orders', value: preorders.length, href: '/admin/inbox?kind=shop', icon: ShoppingBag01Icon, accent: 'bg-ember' },
     { label: `Vouchers used of ${capacity}`, value: redeemed, href: '/admin/vouchers', icon: Ticket02Icon, accent: 'bg-pine' },
-    { label: 'Artists on the lineup', value: db.artists.filter((a) => a.visible).length, href: '/admin/lineup', icon: Mic01Icon, accent: 'bg-plum' },
+    mode === 'supabase'
+      ? { label: 'Active voucher codes', value: db.vouchers.filter((v) => v.active && v.uses < v.maxUses).length, href: '/admin/vouchers', icon: Ticket02Icon, accent: 'bg-plum' }
+      : { label: 'Artists on the lineup', value: db.artists.filter((a) => a.visible).length, href: '/admin/lineup', icon: Mic01Icon, accent: 'bg-plum' },
   ];
 
   return (

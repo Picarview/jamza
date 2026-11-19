@@ -8,6 +8,7 @@ import { Reveal } from '@/components/Reveal';
 import { Venue } from '@/components/home/Venue';
 import { festival } from '@/content/festival';
 import { bedasHotel, faqs, shuttle } from '@/content/visit';
+import { getPublicContent } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -26,7 +27,9 @@ const jump = [
   ['FAQs', '#faqs'],
 ];
 
-export default function VisitPage() {
+export default async function VisitPage() {
+  const { settings } = await getPublicContent();
+  const times = { departure: settings.shuttleDeparture, back: settings.shuttleReturn };
   return (
     <>
       <PageHeader
@@ -60,9 +63,9 @@ export default function VisitPage() {
             </div>
             <ol className="mt-8 space-y-4">
               {[
-                ['Pick-up', shuttle.pickup, shuttle.departure],
+                ['Pick-up', shuttle.pickup, times.departure],
                 ['Drop-off', 'Beda’s Events Center, Old Ashongman', null],
-                ['Back to', shuttle.pickup, shuttle.return],
+                ['Back to', shuttle.pickup, times.back],
               ].map(([label, place, time]) => (
                 <li key={label} className="flex items-center gap-4">
                   <span className="grid size-11 shrink-0 place-items-center rounded-full bg-cream text-plum">
@@ -79,7 +82,7 @@ export default function VisitPage() {
               ))}
             </ol>
             <p className="mt-8 text-sm text-cream/60">
-              {shuttle.departure ? '' : 'Departure and return times will be announced soon. '}
+              {times.departure ? '' : 'Departure and return times will be announced soon. '}
               Book now to hold your seats.
             </p>
           </Reveal>

@@ -2,71 +2,205 @@ import 'server-only';
 import { cache } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { festival } from '@/content/festival';
+import { vendors } from '@/content/join';
+import { lineup as staticLineup, type LineupArtist, type Photo } from '@/content/lineup';
+import { starterPartners } from '@/content/partners';
+import { shop, shopProducts as staticProducts, type Product } from '@/content/shop';
+import { shuttle } from '@/content/visit';
+import type { PartnerTag } from '@/components/home/Partners';
 import { getPublicClient } from './supabase';
-import type { Artist, Partner, Post, Settings, SiteContent } from './types';
+import type { Post, Settings } from './types';
+
+/**
+ * Public site content.
+ *
+ * For now the site is static: lineup, partners, products and festival details come from
+ * src/content/*. Set LIVE_CONTENT to true to read them from Supabase instead (the tables are
+ * already seeded with the same content). Each source then loads independently and falls back to
+ * the content files when its table is empty, missing or unreachable.
+ */
+const LIVE_CONTENT = false;
 
 const PAGE_SIZE = 500;
+type Row = Record<string, unknown>;
+const str = (v: unknown) => (typeof v === 'string' ? v : '');
+
+async function listAll(client: SupabaseClient, table: string, order: string, filter?: (q: any) => any) {
+  const rows: Row[] = [];
+  for (let start = 0; ; start += PAGE_SIZE) {
+    let query = client.from(table).select('*').order(order, { ascending: order === 'sort' }).order('id').range(start, start + PAGE_SIZE - 1);
+    if (filter) query = filter(query);
+    const { data, error } = await query;
+    if (error) throw error;
+    rows.push(...(data as Row[]));
+    if (data.length < PAGE_SIZE) return rows;
+  }
+}
+
+async function attempt<T>(label: string, load: () => Promise<T>, fallback: T): Promise<{ value: T; live: boolean }> {
+  try {
+    return { value: await load(), live: true };
+  } catch (error) {
+    console.warn(`Supabase ${label}: ${(error as Error).message} — using built-in content.`);
+    return { value: fallback, live: false };
+  }
+}
+
+/* ---------- Settings ---------- */
 
 export const defaultSettings: Settings = {
   id: 'site',
   title: 'jamza',
   email: festival.email,
-  instagram: '',
+  instagram: festival.instagram.url,
   linkedin: '',
+  ticketUrl: festival.ticketUrl,
+  communityPrice: null,
+  shopDeadline: shop.deadline,
+  shuttleDeparture: shuttle.departure,
+  shuttleReturn: shuttle.return,
+  vendorDeadline: vendors.deadline,
 };
 
-/** Fetch every page instead of silently stopping at Supabase's default row cap. */
-async function listRecords<T>(client: SupabaseClient, entity: string, publishedOnly = false) {
-  const records: T[] = [];
-  for (let start = 0; ; start += PAGE_SIZE) {
-    let query = client
-      .from(`picarview_${entity}`)
-      .select('*')
-      .order('created_at', { ascending: false })
-      .order('id', { ascending: false })
-      .range(start, start + PAGE_SIZE - 1);
-    if (publishedOnly) query = query.eq('status', 'Published');
-    const { data, error } = await query;
-    if (error) throw error;
-    records.push(...(data as T[]));
-    if (data.length < PAGE_SIZE) return records;
-  }
+const placeholderEmails = ['hello@picarview.com', 'hello@jamza.com', 'example@jamza.com'];
+
+function toSettings(row: Row): Settings {
+  const email = str(row.email).trim();
+  const price = Number(str(row.community_price).replace(/[^\d.]/g, ''));
+  return {
+    id: 'site',
+    title: str(row.title).trim().toLowerCase() === 'picarview' ? 'jamza' : str(row.title) || 'jamza',
+    email: !email || placeholderEmails.includes(email.toLowerCase()) ? festival.email : email,
+    instagram: str(row.instagram) || festival.instagram.url,
+    linkedin: str(row.linkedin),
+    ticketUrl: str(row.ticket_url) || festival.ticketUrl,
+    communityPrice: str(row.community_price) && price > 0 ? price : null,
+    shopDeadline: str(row.shop_deadline) || shop.deadline,
+    shuttleDeparture: str(row.shuttle_departure) || shuttle.departure,
+    shuttleReturn: str(row.shuttle_return) || shuttle.return,
+    vendorDeadline: str(row.vendor_deadline) ? `${str(row.vendor_deadline)}T23:59:59Z` : vendors.deadline,
+  };
 }
 
-/** Old databases may still carry the pre-rebrand demo values. */
-function normalizeSettings(settings: Settings): Settings {
-  const title = settings.title?.trim().toLowerCase() === 'picarview' ? 'jamza' : settings.title;
-  const placeholder = ['hello@picarview.com', 'hello@jamza.com', 'example@jamza.com'];
-  const email =
-    !settings.email?.trim() || placeholder.includes(settings.email.trim().toLowerCase())
-      ? festival.email
-      : settings.email;
-  return { ...settings, title, email };
+/* ---------- Lineup ---------- */
+
+const accents = ['tomato', 'pine', 'plum', 'ember'] as const;
+
+function toArtist(row: Row, i: number): LineupArtist {
+  const slug = str(row.slug) || str(row.id);
+  const known = staticLineup.find((a) => a.slug === slug);
+  const image = str(row.image);
+  // Keep known photo sizes and galleries for artists that came from the content file.
+  const photos: Photo[] =
+    known && known.image === image ? known.photos : image ? [{ src: image, width: 1200, height: 1500 }] : [];
+  const handle = str(row.handle).replace(/^@/, '');
+  return {
+    id: str(row.id),
+    slug,
+    name: str(row.name),
+    role: str(row.role),
+    tier: row.tier === 'guest' ? 'guest' : 'main',
+    handle,
+    image,
+    url: handle ? `https://www.instagram.com/${handle}/` : '',
+    bio: str(row.bio).split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean),
+    photos,
+    accent: accents[i % accents.length],
+  };
 }
 
-export type ContentResult = SiteContent & { ok: boolean };
+/* ---------- Partners & products ---------- */
 
-export const getPublicContent = cache(async (): Promise<ContentResult> => {
-  const empty = { artists: [], posts: [], partners: [], settings: defaultSettings };
-  const client = getPublicClient();
-  if (!client) return { ...empty, ok: false };
-  try {
-    const [artists, posts, partners, settings] = await Promise.all([
-      listRecords<Artist>(client, 'artists'),
-      listRecords<Post>(client, 'posts', true),
-      listRecords<Partner>(client, 'partners'),
-      client.from('picarview_settings').select('*').eq('id', 'site').single(),
-    ]);
-    if (settings.error) throw settings.error;
-    return {
-      artists,
-      posts: posts.sort((a, b) => b.date.localeCompare(a.date)),
-      partners,
-      settings: normalizeSettings(settings.data as Settings),
-      ok: true,
-    };
-  } catch (error) {
-    console.warn('Public content load failed:', (error as Error).message);
-    return { ...empty, ok: false };
-  }
+const toPartner = (row: Row): PartnerTag => ({
+  id: str(row.id),
+  name: str(row.name),
+  url: str(row.url),
+  image: str(row.image),
+  tagline: str(row.tagline),
 });
+
+function toProduct(row: Row): Product {
+  const id = str(row.id);
+  const known = staticProducts.find((p) => p.id === id);
+  const section = row.section === 'merch' ? 'merch' : 'shop';
+  const sizes = str(row.sizes).split(',').map((s) => s.trim()).filter(Boolean);
+  const price = row.price === null || row.price === undefined ? null : Number(row.price);
+  return {
+    id,
+    name: str(row.name),
+    blurb: str(row.blurb),
+    price: price !== null && Number.isFinite(price) ? price : null,
+    group: section,
+    image: str(row.image) || undefined,
+    icon: known?.icon,
+    color: known?.color ?? (section === 'merch' ? 'bg-tomato' : 'bg-plum'),
+    sizes: sizes.length ? sizes : undefined,
+  };
+}
+
+/* ---------- Public content ---------- */
+
+export type PublicContent = {
+  posts: Post[];
+  lineup: LineupArtist[];
+  partners: PartnerTag[];
+  products: Product[];
+  settings: Settings;
+  live: { lineup: boolean; partners: boolean; products: boolean; settings: boolean };
+};
+
+const staticPartners: PartnerTag[] = starterPartners.map((p) => ({ id: p.id, name: p.name, url: p.url, image: p.image ?? '', tagline: p.tagline }));
+
+export const getPublicContent = cache(async (): Promise<PublicContent> => {
+  const client = getPublicClient();
+  if (!client || !LIVE_CONTENT) {
+    // Announcements were already managed in Supabase before the 2026 rebuild; keep reading them.
+    const posts = client
+      ? await attempt(
+          'posts',
+          async () => (await listAll(client, 'jamza_posts', 'created_at', (q) => q.eq('status', 'Published'))) as unknown as Post[],
+          [] as Post[],
+        )
+      : { value: [] as Post[] };
+    return {
+      posts: posts.value.sort((a, b) => b.date.localeCompare(a.date)),
+      lineup: staticLineup,
+      partners: staticPartners,
+      products: staticProducts,
+      settings: defaultSettings,
+      live: { lineup: false, partners: false, products: false, settings: false },
+    };
+  }
+  const [settings, artists, partners, products, posts] = await Promise.all([
+    attempt('settings', async () => {
+      const { data, error } = await client.from('jamza_settings').select('*').eq('id', 'site').single();
+      if (error) throw error;
+      return toSettings(data as Row);
+    }, defaultSettings),
+    attempt('artists', async () => (await listAll(client, 'jamza_artists', 'sort')).map(toArtist), staticLineup),
+    attempt('partners', async () => (await listAll(client, 'jamza_partners', 'sort')).map(toPartner), staticPartners),
+    attempt('products', async () => (await listAll(client, 'jamza_products', 'sort')).map(toProduct), staticProducts),
+    attempt(
+      'posts',
+      async () => (await listAll(client, 'jamza_posts', 'created_at', (q) => q.eq('status', 'Published'))) as unknown as Post[],
+      [] as Post[],
+    ),
+  ]);
+  // An empty table means "not set up yet", not "show nothing".
+  const pick = <T,>(r: { value: T[]; live: boolean }, fallback: T[]) => (r.value.length ? r.value : fallback);
+  return {
+    posts: posts.value.sort((a, b) => b.date.localeCompare(a.date)),
+    lineup: pick(artists, staticLineup),
+    partners: pick(partners, staticPartners),
+    products: pick(products, staticProducts),
+    settings: settings.value,
+    live: {
+      lineup: artists.live && artists.value.length > 0,
+      partners: partners.live && partners.value.length > 0,
+      products: products.live && products.value.length > 0,
+      settings: settings.live,
+    },
+  };
+});
+
+export const getArtist = async (slug: string) => (await getPublicContent()).lineup.find((a) => a.slug === slug);

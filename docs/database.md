@@ -8,7 +8,7 @@ Project reference: `szprwjthyzihzzzshgha`. The browser uses the Supabase Data AP
 2. Run the contents of `supabase/migrations/20261101000000_initial_schema.sql`. It creates only the application's prefixed tables, helper functions, policies, and the `partner-logos` bucket. It does not create users or approve accounts.
 3. Run `supabase/migrations/20261101010000_jamza_brand.sql` after the initial schema. It replaces only original sample branding and updates the defaults to jamza.
 4. Under **Authentication → Users**, create an email/password account and confirm it. Enable email/password authentication if disabled.
-5. Set the email in `supabase/scripts/approve-admin.sql` and run that script. Accounts need explicit membership in `picarview_admins`; signing up alone does not grant access.
+5. Set the email in `supabase/scripts/approve-admin.sql` and run that script. Accounts need explicit membership in `jamza_admins`; signing up alone does not grant access.
 6. Optionally run `supabase/seed.sql` for sample artists, journal entries, and partner names. Existing sample IDs are preserved.
 7. Start the frontend and sign in through `/admin.html`.
 
@@ -18,16 +18,16 @@ The previous files `api/supabase-schema.sql`, `api/supabase-admin.sql`, and `api
 
 | Table                | Public access             | Approved administrator access              |
 | -------------------- | ------------------------- | ------------------------------------------ |
-| `picarview_artists`  | Read                      | Create, read, edit, delete                 |
-| `picarview_posts`    | Read published rows       | Read drafts, create, publish, edit, delete |
-| `picarview_partners` | Read                      | Create, read, edit, delete                 |
-| `picarview_settings` | Read public configuration | Update the single site row                 |
-| `picarview_messages` | None                      | Read, mark read, delete                    |
-| `picarview_admins`   | None                      | Read own membership only                   |
+| `jamza_artists`  | Read                      | Create, read, edit, delete                 |
+| `jamza_posts`    | Read published rows       | Read drafts, create, publish, edit, delete |
+| `jamza_partners` | Read                      | Create, read, edit, delete                 |
+| `jamza_settings` | Read public configuration | Update the single site row                 |
+| `jamza_messages` | None                      | Read, mark read, delete                    |
+| `jamza_admins`   | None                      | Read own membership only                   |
 
 Only SQL Editor/database administrators can change the allowlist. The frontend never receives elevated database credentials. Public-page clients do not restore admin sessions, and public post queries also explicitly filter for published entries. Database RLS is the authority regardless of frontend controls.
 
-Visitors send messages through `picarview_submit_message`, which validates field lengths and email structure, limits each email to three messages per 15 minutes, and returns no inbox data. Direct anonymous access to the inbox table is denied. The form also includes a honeypot. For higher-volume public traffic, add edge-level bot controls rather than treating a per-email limit as comprehensive abuse protection.
+Visitors send messages through `jamza_submit_message`, which validates field lengths and email structure, limits each email to three messages per 15 minutes, and returns no inbox data. Direct anonymous access to the inbox table is denied. The form also includes a honeypot. For higher-volume public traffic, add edge-level bot controls rather than treating a per-email limit as comprehensive abuse protection.
 
 The public `partner-logos` bucket accepts PNG, JPEG, and WebP files up to 400,000 bytes. Only approved administrators can upload, update, or delete objects. Logo URLs are publicly readable by design. Replaced or deleted partner records do not automatically delete previously referenced assets.
 

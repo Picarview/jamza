@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeader } from '@/components/PageHeader';
 import { JoinTabs } from '@/components/join/JoinTabs';
+import { getPublicContent } from '@/lib/content';
 import { baseOpenGraph } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
   openGraph: { ...baseOpenGraph, url: '/join', title: 'Get involved — JAMZA! FESTIVAL 2026' },
 };
 
-export default function JoinPage() {
+export default async function JoinPage() {
+  const { settings } = await getPublicContent();
   return (
     <>
       <PageHeader
@@ -20,7 +22,7 @@ export default function JoinPage() {
         intro="Help us bring the night to life: sell tickets with the team, or show your work at the marketplace."
       />
       <section className="bg-night pb-28 pt-14">
-        <JoinTabs />
+        <JoinTabs vendorDeadline={settings.vendorDeadline} />
       </section>
     </>
   );

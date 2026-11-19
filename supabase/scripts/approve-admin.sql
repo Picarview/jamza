@@ -9,6 +9,6 @@ begin
   if admin_id is null then
     raise exception 'Create the user in Authentication > Users first, and replace the email in this script.';
   end if;
-  insert into public.picarview_admins(user_id) values (admin_id) on conflict do nothing;
+  insert into public.jamza_admins(user_id) values (admin_id) on conflict do nothing;
 end;
 $$;

@@ -15,17 +15,19 @@ import { Icon } from '@/components/Icon';
 import { JsonLd } from '@/components/JsonLd';
 import { Reveal } from '@/components/Reveal';
 import { festival } from '@/content/festival';
-import { artistBySlug, lineup, type LineupArtist } from '@/content/lineup';
+import type { LineupArtist } from '@/content/lineup';
+import { getArtist, getPublicContent } from '@/lib/content';
 import { baseOpenGraph, siteUrl } from '@/lib/site';
 
-// One page per artist, all generated at build; anything else is a 404.
-export const dynamicParams = false;
-export const generateStaticParams = () => lineup.map((a) => ({ artist: a.slug }));
+// Lineup artists are pre-built; artists added in the admin get their page on first visit.
+// Unknown names 404. Pages refresh at most once a minute, or right away after an admin save.
+export const revalidate = 60;
+export const generateStaticParams = async () => (await getPublicContent()).lineup.map((a) => ({ artist: a.slug }));
 
 type Props = { params: Promise<{ artist: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const artist = artistBySlug((await params).artist);
+  const artist = await getArtist((await params).artist);
   if (!artist) return {};
   const description = artist.bio[0]
     ? `${artist.bio[0].slice(0, 150)}${artist.bio[0].length > 150 ? '…' : ''}`
@@ -54,10 +56,11 @@ const badge: Record<LineupArtist['accent'], string> = {
 };
 
 export default async function ArtistPage({ params }: Props) {
-  const artist = artistBySlug((await params).artist);
+  const artist = await getArtist((await params).artist);
   if (!artist) notFound();
+  const { lineup } = await getPublicContent();
 
-  const index = lineup.indexOf(artist);
+  const index = lineup.findIndex((a) => a.slug === artist.slug);
   const prev = lineup[(index - 1 + lineup.length) % lineup.length];
   const next = lineup[(index + 1) % lineup.length];
   const [cover, ...gallery] = artist.photos;

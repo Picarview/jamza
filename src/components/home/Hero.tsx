@@ -22,7 +22,7 @@ const scenes = [
 
 const SCENE_MS = 6000;
 
-export function Hero() {
+export function Hero({ ticketUrl }: { ticketUrl: string | null }) {
   const reduce = useReducedMotion();
   const [scene, setScene] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -39,7 +39,7 @@ export function Hero() {
   }, [reduce, paused]);
 
   const current = scenes[scene];
-  const ticketHref = festival.ticketUrl ?? '#tickets';
+  const ticketHref = ticketUrl ?? '#tickets';
 
   return (
     <section

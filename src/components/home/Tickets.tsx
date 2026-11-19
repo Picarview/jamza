@@ -73,11 +73,15 @@ function Stub({ ticket, index }: { ticket: Ticket; index: number }) {
   );
 }
 
-export function Tickets() {
-  const featured = festival.tickets.find((t) => t.featured);
+export function Tickets({ ticketUrl, communityPrice }: { ticketUrl: string | null; communityPrice: number | null }) {
+  // The Break Time Community price is set in the admin; everything else comes from the festival brief.
+  const tickets = festival.tickets.map((t) =>
+    t.id === 'community' && communityPrice !== null ? { ...t, price: communityPrice, note: 'Till 18 Dec' } : t,
+  );
+  const featured = tickets.find((t) => t.featured);
   const left = daysLeft(featured?.endsAt);
   const earlyBirdOn = featured && left !== null && left > 0;
-  const rest = festival.tickets.filter((t) => t !== featured || !earlyBirdOn);
+  const rest = tickets.filter((t) => t !== featured || !earlyBirdOn);
 
   return (
     <section id="tickets" aria-labelledby="tickets-title" className="relative overflow-hidden bg-grape py-28">
@@ -161,8 +165,8 @@ export function Tickets() {
               </p>
             </div>
           </div>
-          {festival.ticketUrl ? (
-            <a href={festival.ticketUrl} target="_blank" rel="noopener noreferrer" className="btn bg-lime text-black shadow-[4px_5px_0_#000]">
+          {ticketUrl ? (
+            <a href={ticketUrl} target="_blank" rel="noopener noreferrer" className="btn bg-lime text-black shadow-[4px_5px_0_#000]">
               Get tickets <Icon icon={ArrowUpRight01Icon} size={18} />
             </a>
           ) : (

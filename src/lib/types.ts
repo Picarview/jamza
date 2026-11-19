@@ -1,4 +1,3 @@
-export type Artist = { id: string; name: string; role: string; image: string };
 export type Post = {
   id: string;
   title: string;
@@ -9,17 +8,18 @@ export type Post = {
   excerpt: string;
   body: string;
 };
-export type Partner = { id: string; name: string; url: string; image: string };
+
+/** Site-wide settings (jamza_settings row 'site'), with festival details editable in the admin. */
 export type Settings = {
   id: 'site';
   title: string;
   email: string;
   instagram: string;
   linkedin: string;
-};
-export type SiteContent = {
-  artists: Artist[];
-  posts: Post[];
-  partners: Partner[];
-  settings: Settings;
+  ticketUrl: string | null;
+  communityPrice: number | null;
+  shopDeadline: string | null;
+  shuttleDeparture: string | null;
+  shuttleReturn: string | null;
+  vendorDeadline: string; // ISO date
 };

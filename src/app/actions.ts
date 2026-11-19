@@ -2,7 +2,7 @@
 
 import { getPublicClient } from '@/lib/supabase';
 import { forms, VOUCHER_PATTERN, type FormKind } from '@/lib/forms';
-import { shopProducts } from '@/content/shop';
+import { getPublicContent } from '@/lib/content';
 
 export type LetterState = { status: 'idle' | 'sent' | 'error'; message: string };
 
@@ -24,7 +24,7 @@ export async function sendLetter(_: LetterState, form: FormData): Promise<Letter
   }
   const client = getPublicClient();
   if (!client) return { status: 'error', message: 'Letters can’t be sent right now. Please email us instead.' };
-  const { error } = await client.rpc('picarview_submit_message', {
+  const { error } = await client.rpc('jamza_submit_message', {
     p_name: values.name,
     p_email: values.email,
     p_subject: values.subject,
@@ -70,7 +70,8 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
   // Shop: quantities per product, sent as qty-<id>.
   let items = '';
   if (kind === 'shop' || kind === 'merch') {
-    const lines = shopProducts
+    const { products } = await getPublicContent();
+    const lines = products
       .filter((p) => p.group === kind)
       .map((p) => ({ p, qty: Number(form.get(`qty-${p.id}`) ?? 0) }))
       .filter(({ qty }) => Number.isInteger(qty) && qty > 0 && qty <= 50)
@@ -96,19 +97,41 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
 
   const client = getPublicClient();
   if (!client) return { status: 'error', message: 'This form can’t be sent right now. Please email us instead.' };
-  const { error } = await client.rpc('picarview_submit_message', {
+  const busy = (message: string) =>
+    message.includes('Too many')
+      ? 'You’ve sent a few already — give us 15 minutes to catch up.'
+      : 'That didn’t go through. Please try again or email us directly.';
+  // PGRST202 = function not found (database not migrated yet): fall back to the original inbox function.
+  const missing = (code?: string) => code === 'PGRST202' || code === '42883';
+
+  if (kind === 'voucher') {
+    const { data, error } = await client.rpc('jamza_redeem_voucher', {
+      p_code: values.code,
+      p_name: values.name,
+      p_email: values.email,
+      p_phone: values.phone,
+    });
+    if (!error) {
+      const outcomes: Record<string, LetterState> = {
+        ok: { status: 'sent', message: 'Code accepted! We’ll email your free ticket shortly.' },
+        invalid: { status: 'error', message: 'That code isn’t valid. Check it and try again.' },
+        expired: { status: 'error', message: 'That code has expired.' },
+        used: { status: 'error', message: 'That code has already been used.' },
+        already: { status: 'error', message: 'You’ve already claimed this code — check your email.' },
+      };
+      return outcomes[String(data)] ?? { status: 'error', message: busy('') };
+    }
+    if (!missing(error.code)) return { status: 'error', message: busy(error.message) };
+  }
+
+  const message = {
     p_name: name.slice(0, 100),
     p_email: values.email,
     p_subject: config.subject(values).slice(0, 160),
     p_message: `[${config.title}]\n\n${body}`.slice(0, 5000),
-  });
-  if (error) {
-    return {
-      status: 'error',
-      message: error.message.includes('Too many')
-        ? 'You’ve sent a few already — give us 15 minutes to catch up.'
-        : 'That didn’t go through. Please try again or email us directly.',
-    };
-  }
+  };
+  let { error } = kind === 'voucher' ? { error: { code: 'PGRST202', message: '' } } : await client.rpc('jamza_submit', { p_kind: kind, ...message });
+  if (error && missing(error.code)) ({ error } = await client.rpc('jamza_submit_message', message));
+  if (error) return { status: 'error', message: busy(error.message) };
   return { status: 'sent', message: config.sent ?? 'We’ve got it — the JAMZA! team will be in touch by email.' };
 }

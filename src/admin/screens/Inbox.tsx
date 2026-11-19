@@ -16,8 +16,12 @@ const statuses: { id: InboxStatus | 'all'; label: string }[] = [
   { id: 'done', label: 'Done' },
 ];
 
+/** Run an admin action and surface any failure. */
+const run = (action: () => Promise<unknown>) => action().catch((e: Error) => alert(e.message));
+
 function Detail({ m }: { m: Message }) {
   const { db, save, remove } = useAdmin();
+  const autoClaimed = m.body.includes('Claimed automatically');
   const code = m.kind === 'voucher' ? m.body.match(/Voucher code: ([A-Z0-9-]+)/)?.[1] : undefined;
   const voucher = code ? db.vouchers.find((v) => v.code === code) : undefined;
   const expired = voucher?.expiresAt ? new Date(`${voucher.expiresAt}T23:59:59`) < new Date() : false;
@@ -41,7 +45,9 @@ function Detail({ m }: { m: Message }) {
             <Icon icon={Ticket02Icon} size={18} /> {code}
           </p>
           <p className="mt-1 text-sm">
-            {!voucher
+            {autoClaimed
+              ? `Checked and claimed on the site${voucher ? ` — ${voucher.uses} of ${voucher.maxUses} used` : ''}. Send their free ticket, then mark it sent.`
+              : !voucher
               ? 'This code doesn’t exist.'
               : !voucher.active
                 ? 'This code is switched off.'
@@ -51,15 +57,17 @@ function Detail({ m }: { m: Message }) {
                     ? `All ${voucher.maxUses} uses are taken.`
                     : `Valid — ${voucher.uses} of ${voucher.maxUses} used. ${voucher.note}`}
           </p>
-          {usable && m.status !== 'done' && (
+          {m.status !== 'done' && (autoClaimed || usable) && (
             <div className="mt-3">
               <Button
-                onClick={async () => {
-                  await save('vouchers', { ...voucher, uses: voucher.uses + 1 });
-                  await save('messages', { ...m, status: 'done' });
-                }}
+                onClick={() =>
+                  run(async () => {
+                    if (!autoClaimed && voucher) await save('vouchers', { ...voucher, uses: voucher.uses + 1 });
+                    await save('messages', { ...m, status: 'done' });
+                  })
+                }
               >
-                <Icon icon={CheckmarkCircle02Icon} size={16} /> Approve & use code
+                <Icon icon={CheckmarkCircle02Icon} size={16} /> {autoClaimed ? 'Mark ticket sent' : 'Approve & use code'}
               </Button>
             </div>
           )}
@@ -72,10 +80,10 @@ function Detail({ m }: { m: Message }) {
         <a href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`} className="inline-flex items-center gap-2 rounded-full bg-plum px-4 py-2.5 text-sm font-bold text-cream shadow-[3px_4px_0_var(--color-tomato)]">
           <Icon icon={MailReply01Icon} size={16} /> Reply
         </a>
-        <Button variant="ghost" onClick={() => save('messages', { ...m, status: m.status === 'done' ? 'read' : 'done' })}>
+        <Button variant="ghost" onClick={() => run(() => save('messages', { ...m, status: m.status === 'done' ? 'read' : 'done' }))}>
           <Icon icon={CheckmarkCircle02Icon} size={16} /> {m.status === 'done' ? 'Reopen' : 'Mark done'}
         </Button>
-        <Button variant="danger" onClick={() => confirm('Delete this message?') && remove('messages', m.id)}>
+        <Button variant="danger" onClick={() => confirm('Delete this message?') && run(() => remove('messages', m.id))}>
           <Icon icon={Delete02Icon} size={16} /> Delete
         </Button>
       </div>
@@ -109,7 +117,7 @@ export function Inbox() {
   const open = (m: Message) => {
     setSelected(m.id);
     router.replace(`/admin/inbox?id=${m.id}${kind !== 'all' ? `&kind=${kind}` : ''}`, { scroll: false });
-    if (m.status === 'new') void save('messages', { ...m, status: 'read' });
+    if (m.status === 'new') void run(() => save('messages', { ...m, status: 'read' }));
   };
 
   const chip = (active: boolean) =>
