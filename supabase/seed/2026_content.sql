@@ -16,17 +16,21 @@ Makayy continues to explore the intersection of music, culture and creative deve
   ('sea', 'sea', 'Sea', 'Alternative Afro, dancehall, R&B & soul', 'main', 'sea.ufo', '/images/artists/sea.webp', 'SEA THE UFO is a London-born, Accra-based artist of Ghanaian and Jamaican heritage, weaving alternative Afro, Dancehall, R&B and Soul into a genre-bending sound.
 
 With her ethereal, breathy vocals and captivating presence, she balances softness with sensuality, creating music that celebrates individuality and defies convention.', true, 3),
-  ('esi-baby', 'esi-baby', 'Esi Baby', 'Vocalist', 'main', 'esibaby', '/images/artists/esi-baby.webp', '', true, 4),
-  ('currie', 'currie', 'Currie', 'Gospel artist', 'main', 'tracy_currie_kanzy', '/images/artists/currie.webp', 'Currie is a rising gospel artist with over nine years of musical experience. Blending contemporary gospel with Afro-inspired sounds, she brings a unique expression to her music, using her gift to inspire, uplift, and connect with people through meaningful songs that reflect faith, hope, and life.', true, 5),
+  ('currie', 'currie', 'Currie', 'Gospel artist', 'main', 'tracy_currie_kanzy', '/images/artists/currie.webp', 'Currie is a rising gospel artist with over nine years of musical experience. Blending contemporary gospel with Afro-inspired sounds, she brings a unique expression to her music, using her gift to inspire, uplift, and connect with people through meaningful songs that reflect faith, hope, and life.', true, 4),
   ('jahzara', 'jahzara', 'Jahzara', 'Co-host & performer', 'main', 'jahzaraagyemang', '/images/artists/jahzara.webp', 'Jahzara! — Diva of Ceremonies and International Host — is bringing the heat from Philadelphia, USA to Ghana! A singer-songwriter, bassist, and frontwoman of The Moonshadow Band, with a wild vibe combination of jazz fusion, funk, yacht rock and house.
 
-Over 20 years of performing, traveling, fashion shows and concerts internationally, she is bringing that big ENERGY to JAMZA! 2026 as our co-host and performer. Jahzara! is affectionately known in Ghana as Obaa Yaa Papabi!', true, 6),
+Over 20 years of performing, traveling, fashion shows and concerts internationally, she is bringing that big ENERGY to JAMZA! 2026 as our co-host and performer. Jahzara! is affectionately known in Ghana as Obaa Yaa Papabi!', true, 5),
   ('riaboss', 'riaboss', 'Riaboss', 'Vocalist & songwriter', 'main', 'theriaboss', '/images/artists/riaboss.webp', 'A cat that wears many hats, Ria Boss (also known as Cat Mama) is most well known for being a powerhouse vocalist, songwriter and passionate live performer.
 
 She is also deeply rooted in community, having co-founded the live performance showcase and open mic platform “Ria Boss Open Mic”, and serving as the Creative Lead and Programs Facilitator for Black Girls Glow.
 
-Her latest release “Place I go to” is out now, a collaboration with the artist and Black Girls Glow alumni, malaïka. She is currently working on her next album and interdisciplinary project “Heartbreak Hotel” in her home of Accra.', true, 7),
-  ('ami', 'ami', 'Ami', 'Sound for healing, feeling & joy', 'main', 'ami_tamakloe', '/images/artists/ami.webp', 'Ami Tamakloe is a multidisciplinary cultural worker who uses sound as a tool for healing, feeling and joy. Whether spoken or sung, hummed or belted.', true, 8),
+Her latest release “Place I go to” is out now, a collaboration with the artist and Black Girls Glow alumni, malaïka. She is currently working on her next album and interdisciplinary project “Heartbreak Hotel” in her home of Accra.', true, 6),
+  ('ami', 'ami', 'Ami', 'Sound for healing, feeling & joy', 'main', 'ami_tamakloe', '/images/artists/ami.webp', 'Ami Tamakloe is a multidisciplinary cultural worker who uses sound as a tool for healing, feeling and joy. Whether spoken or sung, hummed or belted.', true, 7),
+  ('mvssy', 'mvssy', 'MVSSY', 'Singer & songwriter', 'main', 'saymvssyxo', '/images/artists/mvssy.webp', 'MVSSY is a Ghanaian singer and songwriter. She began singing at age five and launched her career in 2018 as a backing vocalist for Efya, M.anifest, Kwesi Arthur, King Promise and MzVee.
+
+Now recording, she’s shaping a bold contemporary Alternative African sound and tapping into diverse genres. Inspired by R&B and jazz, she likes to fuse them with Afrobeats.
+
+She loves to connect through live music and is driven by connecting with her listeners, believing sound and music is a universal language which speaks to the soul.', true, 8),
   ('duafe-adenkum-palmwine-band', 'duafe-adenkum-palmwine-band', 'Duafe Adenkum Palmwine Band', 'Traditional Akan Adenkum music', 'guest', 'duafe.adenkum.band', '/images/artists/duafe-adenkum-palmwine-band.webp', 'The Duafe Adenkum Band is a traditional Ghanaian music group founded in March 2025 by singer-songwriter Awura-Ama Agyapong, known professionally as Rama Blak.
 
 The group seeks to revive and reintroduce the traditional Akan Adenkum music practice into contemporary spaces, creating performance, skill-building, and income-earning opportunities for young women in Ghana’s music industry.', true, 9),
@@ -46,7 +50,8 @@ Beyond her creative work, Seyram is passionate about leadership and student advo
 
 Enam started her musical journey from the shrine; her love for music grew stronger when she was singing with her great-grandmothers in the shrines in early childhood. This is not your regular music but chants woven in the frequency and vibrations of a higher dimension, to offer general healing and connection to the cosmic realms and planes.
 
-Enam the HADZIVODUSHI aspires to continue her ancestral genre of music and make it available to the whole world. Despite her versatility over the years, Enam has been mainly consistent and known for her unique smooth vocals and thick blond locs.', true, 14)
+Enam the HADZIVODUSHI aspires to continue her ancestral genre of music and make it available to the whole world. Despite her versatility over the years, Enam has been mainly consistent and known for her unique smooth vocals and thick blond locs.', true, 14),
+  ('qany', 'qany', 'Qany', 'Special guest', 'guest', 'q.a.n.y_musichub', '', '', true, 15)
 on conflict (id) do nothing;
 
 insert into public.jamza_partners (id, name, url, image, tagline, visible, sort) values

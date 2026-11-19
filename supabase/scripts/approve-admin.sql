@@ -2,7 +2,7 @@
 -- Change the email below to the email of your own administrator account.
 do $$
 declare
-  admin_email text := 'REPLACE_WITH_YOUR_ADMIN_EMAIL';
+  admin_email text := 'jamzafestival@gmail.com';
   admin_id uuid;
 begin
   select id into admin_id from auth.users where lower(email) = lower(admin_email);

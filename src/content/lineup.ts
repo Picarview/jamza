@@ -1,7 +1,7 @@
 /**
  * JAMZA! FESTIVAL 2026 lineup — official confirmed list, bios and photos supplied by the organisers.
  * Each artist gets a page at /<slug>. Internal booking notes are deliberately not published.
- * Not yet listed: Abiana (marked "Hold" in the brief); MVSSY (bio supplied, not on the lineup list).
+ * Updated 19 Nov: Esi Baby out; MVSSY ("Massy") joins the main artists; Qany joins the guests.
  */
 export type Photo = { src: string; width: number; height: number };
 
@@ -65,15 +65,6 @@ const entries: Entry[] = [
     ],
   },
   {
-    slug: 'esi-baby',
-    name: 'Esi Baby',
-    role: 'Vocalist',
-    tier: 'main',
-    handle: 'esibaby',
-    photos: [photo('esi-baby', 933, 1400)],
-    bio: [],
-  },
-  {
     slug: 'currie',
     name: 'Currie',
     role: 'Gospel artist',
@@ -118,6 +109,19 @@ const entries: Entry[] = [
     photos: [photo('ami', 1080, 1080), photo('ami-2', 720, 1080)],
     bio: [
       'Ami Tamakloe is a multidisciplinary cultural worker who uses sound as a tool for healing, feeling and joy. Whether spoken or sung, hummed or belted.',
+    ],
+  },
+  {
+    slug: 'mvssy',
+    name: 'MVSSY',
+    role: 'Singer & songwriter',
+    tier: 'main',
+    handle: 'saymvssyxo',
+    photos: [photo('mvssy', 864, 1080), photo('mvssy-2', 720, 1080)],
+    bio: [
+      'MVSSY is a Ghanaian singer and songwriter. She began singing at age five and launched her career in 2018 as a backing vocalist for Efya, M.anifest, Kwesi Arthur, King Promise and MzVee.',
+      'Now recording, she’s shaping a bold contemporary Alternative African sound and tapping into diverse genres. Inspired by R&B and jazz, she likes to fuse them with Afrobeats.',
+      'She loves to connect through live music and is driven by connecting with her listeners, believing sound and music is a universal language which speaks to the soul.',
     ],
   },
   {
@@ -194,6 +198,15 @@ const entries: Entry[] = [
       'Enam started her musical journey from the shrine; her love for music grew stronger when she was singing with her great-grandmothers in the shrines in early childhood. This is not your regular music but chants woven in the frequency and vibrations of a higher dimension, to offer general healing and connection to the cosmic realms and planes.',
       'Enam the HADZIVODUSHI aspires to continue her ancestral genre of music and make it available to the whole world. Despite her versatility over the years, Enam has been mainly consistent and known for her unique smooth vocals and thick blond locs.',
     ],
+  },
+  {
+    slug: 'qany',
+    name: 'Qany',
+    role: 'Special guest', // photo & bio to come
+    tier: 'guest',
+    handle: 'q.a.n.y_musichub',
+    photos: [],
+    bio: [],
   },
 ];
 
