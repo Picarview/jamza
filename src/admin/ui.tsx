@@ -267,7 +267,20 @@ export function Drawer({
 
 /* ---------- Generic collection screen ---------- */
 
-export type Column<T> = { label: string; cell: (row: T) => ReactNode; className?: string };
+/**
+ * A table column. Cells stay on one line unless `wrap` is set (for longer text like a role or a
+ * note), which gives the column a sensible width and lets it wrap instead of stretching the table.
+ */
+export type Column<T> = {
+  label: string;
+  cell: (row: T) => ReactNode;
+  className?: string;
+  wrap?: boolean;
+  /** Phones: show beside the row's title instead of in the details grid (e.g. a status badge). */
+  pin?: boolean;
+  /** Tables: only show from this width up, to keep the table inside the card on smaller screens. */
+  from?: 'xl';
+};
 
 export function CollectionTable<T extends { id: string }>({
   rows,
@@ -334,12 +347,45 @@ export function CollectionTable<T extends { id: string }>({
             <Icon icon={Add01Icon} size={18} /> New {noun}
           </Button>
         </div>
-        <div className="overflow-x-auto">
+        {/* Phones: each row is a card. */}
+        <ul className="divide-y divide-plum/5 md:hidden">
+          {filtered.map((row) => {
+            const [first, ...rest] = columns;
+            const pinned = rest.filter((c) => c.pin);
+            return (
+              <li key={row.id}>
+                <button type="button" onClick={() => open(row)} className="block w-full px-4 py-4 text-left transition-colors hover:bg-plum/[0.04] focus-visible:bg-plum/[0.04] focus-visible:outline-none">
+                  <span className="flex items-start justify-between gap-3">
+                    <span className="block min-w-0 font-bold">{first.cell(row)}</span>
+                    {pinned.length > 0 && (
+                      <span className="flex shrink-0 items-center gap-1.5 pt-0.5">
+                        {pinned.map((c) => (
+                          <span key={c.label}>{c.cell(row)}</span>
+                        ))}
+                      </span>
+                    )}
+                  </span>
+                  <span className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+                    {rest.filter((c) => !c.pin).map((c) => (
+                      <span key={c.label} className={`min-w-0 ${c.wrap ? 'col-span-2' : ''}`}>
+                        <span className="block text-[0.65rem] font-bold uppercase tracking-[0.12em] text-plum/45">{c.label}</span>
+                        <span className="mt-0.5 block min-w-0 break-words">{c.cell(row)}</span>
+                      </span>
+                    ))}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Tablets and up: a table that scrolls inside the card if it ever runs out of room. */}
+        <div className="hidden overflow-x-auto overscroll-x-contain md:block">
           <table className="w-full text-left text-sm">
             <thead className="text-xs uppercase tracking-[0.12em] text-plum/50">
               <tr>
-                {columns.map((c) => (
-                  <th key={c.label} className={`px-4 py-3 font-bold ${c.className ?? ''}`}>
+                {columns.map((c, i) => (
+                  <th key={c.label} className={`whitespace-nowrap py-3 font-bold ${i === 0 ? 'pl-5 pr-4' : 'px-4'} ${i === columns.length - 1 ? 'pr-5' : ''} ${c.from ? 'hidden xl:table-cell' : ''} ${c.className ?? ''}`}>
                     {c.label}
                   </th>
                 ))}
@@ -349,7 +395,12 @@ export function CollectionTable<T extends { id: string }>({
               {filtered.map((row) => (
                 <tr key={row.id} onClick={() => open(row)} className="cursor-pointer border-t border-plum/5 transition-colors hover:bg-plum/[0.04]">
                   {columns.map((c, i) => (
-                    <td key={c.label} className={`px-4 py-3 align-middle ${c.className ?? ''}`}>
+                    <td
+                      key={c.label}
+                      className={`py-3 align-middle ${i === 0 ? 'pl-5 pr-4' : 'px-4'} ${i === columns.length - 1 ? 'pr-5' : ''} ${
+                        c.wrap ? 'min-w-44 max-w-72' : 'whitespace-nowrap'
+                      } ${c.from ? 'hidden xl:table-cell' : ''} ${c.className ?? ''}`}
+                    >
                       {i === 0 ? (
                         <button type="button" className="text-left font-bold focus-visible:underline" onClick={(e) => (e.stopPropagation(), open(row))}>
                           {c.cell(row)}
@@ -363,8 +414,8 @@ export function CollectionTable<T extends { id: string }>({
               ))}
             </tbody>
           </table>
-          {!filtered.length && <p className="p-10 text-center text-plum/50">{query ? 'No matches.' : `No ${noun}s yet.`}</p>}
         </div>
+        {!filtered.length && <p className="p-10 text-center text-plum/50">{query ? 'No matches.' : `No ${noun}s yet.`}</p>}
         <p className="border-t border-plum/10 px-4 py-3 text-xs text-plum/50">
           {filtered.length} of {rows.length} {noun}
           {rows.length === 1 ? '' : 's'}

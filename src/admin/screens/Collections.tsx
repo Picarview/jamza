@@ -34,11 +34,11 @@ export function Vouchers() {
         }
         columns={[
           { label: 'Code', cell: (v) => <span className="font-black tracking-[0.12em]">{v.code}</span> },
-          { label: 'For', cell: (v) => <span className="text-plum/70">{v.note || '—'}</span> },
+          { label: 'For', wrap: true, cell: (v) => <span className="text-plum/70">{v.note || '—'}</span> },
           {
             label: 'Used',
             cell: (v) => (
-              <span className="flex min-w-28 items-center gap-2">
+              <span className="flex min-w-32 items-center gap-2">
                 <span className="h-2 flex-1 overflow-hidden rounded-full bg-plum/10">
                   <span className="block h-full rounded-full bg-pine" style={{ width: `${Math.min(100, (v.uses / Math.max(1, v.maxUses)) * 100)}%` }} />
                 </span>
@@ -51,6 +51,7 @@ export function Vouchers() {
           { label: 'Expires', cell: (v) => <span className="whitespace-nowrap text-plum/70">{v.expiresAt || 'Never'}</span> },
           {
             label: 'Status',
+            pin: true,
             cell: (v) =>
               !v.active ? <Badge tone="grey">Off</Badge> : v.uses >= v.maxUses ? <Badge tone="gold">Used up</Badge> : <Badge tone="green">Active</Badge>,
           },
@@ -108,9 +109,9 @@ export function Shop() {
         columns={[
           { label: 'Item', cell: (p) => <span className="flex items-center gap-3">{thumb(p.image)}{p.name}</span> },
           { label: 'Price', cell: (p) => (p.price ? `GHC ${p.price}` : <span className="text-plum/50">Price soon</span>) },
-          { label: 'Sizes', cell: (p) => <span className="text-plum/70">{p.sizes || '—'}</span> },
-          { label: 'Order', cell: (p) => <span className="tabular-nums text-plum/60">{p.sort}</span> },
-          { label: 'Status', cell: (p) => shown(p.visible) },
+          { label: 'Sizes', from: 'xl', cell: (p) => <span className="text-plum/70">{p.sizes || '—'}</span> },
+          { label: 'Order', from: 'xl', cell: (p) => <span className="tabular-nums text-plum/60">{p.sort}</span> },
+          { label: 'Status', pin: true, cell: (p) => shown(p.visible) },
         ]}
         fields={[
           { name: 'name', label: 'Name', required: true },
@@ -163,10 +164,10 @@ export function Lineup() {
         columns={[
           { label: 'Artist', cell: (a) => <span className="flex items-center gap-3">{thumb(a.image, true)}{a.name}</span> },
           { label: 'Billing', cell: (a) => <Badge tone={a.tier === 'main' ? 'plum' : 'gold'}>{a.tier === 'main' ? 'Main' : 'Special guest'}</Badge> },
-          { label: 'Role', cell: (a) => <span className="text-plum/70">{a.role}</span> },
-          { label: 'Instagram', cell: (a) => <span className="text-plum/70">@{a.handle}</span> },
-          { label: 'Page', cell: (a) => <span className="whitespace-nowrap text-plum/50">/{a.slug}</span> },
-          { label: 'Status', cell: (a) => shown(a.visible) },
+          { label: 'Role', wrap: true, cell: (a) => <span className="text-plum/70">{a.role}</span> },
+          { label: 'Instagram', from: 'xl', cell: (a) => <span className="text-plum/70">@{a.handle}</span> },
+          { label: 'Page', from: 'xl', cell: (a) => <span className="whitespace-nowrap text-plum/50">/{a.slug}</span> },
+          { label: 'Status', pin: true, cell: (a) => shown(a.visible) },
         ]}
         fields={[
           { name: 'name', label: 'Name', required: true, half: true },
@@ -210,9 +211,9 @@ export function Partners() {
         validate={(p) => (p.url && !/^https?:\/\//.test(p.url) ? 'Website links must start with https://' : null)}
         columns={[
           { label: 'Partner', cell: (p) => <span className="flex items-center gap-3">{p.image ? <img src={p.image} alt="" className="h-10 w-16 shrink-0 rounded-lg bg-white object-contain p-1" /> : <span className="h-10 w-16 shrink-0 rounded-lg bg-plum/10" />}{p.name}</span> },
-          { label: 'Tagline', cell: (p) => <span className="text-plum/70">{p.tagline || '—'}</span> },
-          { label: 'Website', cell: (p) => <span className="text-plum/70">{p.url ? p.url.replace(/^https?:\/\/(www\.)?/, '') : '—'}</span> },
-          { label: 'Status', cell: (p) => shown(p.visible) },
+          { label: 'Tagline', wrap: true, cell: (p) => <span className="text-plum/70">{p.tagline || '—'}</span> },
+          { label: 'Website', from: 'xl', cell: (p) => <span className="text-plum/70">{p.url ? p.url.replace(/^https?:\/\/(www\.)?/, '') : '—'}</span> },
+          { label: 'Status', pin: true, cell: (p) => shown(p.visible) },
         ]}
         fields={[
           { name: 'name', label: 'Name', required: true },
