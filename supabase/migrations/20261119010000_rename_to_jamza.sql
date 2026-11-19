@@ -35,13 +35,14 @@ begin
 end;
 $$;
 
--- Policies and triggers.
+-- Policies and triggers in public. (Storage policies are handled below: Supabase lets the SQL
+-- Editor create and drop policies on storage.objects, but not rename them.)
 do $$
 declare r record;
 begin
   for r in
     select schemaname, tablename, policyname from pg_policies
-    where schemaname in ('public','storage') and policyname like 'picarview\_%'
+    where schemaname = 'public' and policyname like 'picarview\_%'
   loop
     execute format('alter policy %I on %I.%I rename to %I', r.policyname, r.schemaname, r.tablename, 'jamza_' || substr(r.policyname, 11));
   end loop;
@@ -166,6 +167,20 @@ begin
   return 'ok';
 end;
 $$;
+
+-- Partner-logo storage rules: recreate under jamza_ names (same rules as before).
+drop policy if exists picarview_logo_read on storage.objects;
+drop policy if exists picarview_logo_insert on storage.objects;
+drop policy if exists picarview_logo_update on storage.objects;
+drop policy if exists picarview_logo_delete on storage.objects;
+drop policy if exists jamza_logo_read on storage.objects;
+create policy jamza_logo_read on storage.objects for select to anon, authenticated using (bucket_id = 'partner-logos');
+drop policy if exists jamza_logo_insert on storage.objects;
+create policy jamza_logo_insert on storage.objects for insert to authenticated with check (bucket_id = 'partner-logos' and (select public.jamza_is_admin()));
+drop policy if exists jamza_logo_update on storage.objects;
+create policy jamza_logo_update on storage.objects for update to authenticated using (bucket_id = 'partner-logos' and (select public.jamza_is_admin())) with check (bucket_id = 'partner-logos' and (select public.jamza_is_admin()));
+drop policy if exists jamza_logo_delete on storage.objects;
+create policy jamza_logo_delete on storage.objects for delete to authenticated using (bucket_id = 'partner-logos' and (select public.jamza_is_admin()));
 
 revoke all on function public.jamza_is_admin() from public, anon;
 grant execute on function public.jamza_is_admin() to authenticated;
