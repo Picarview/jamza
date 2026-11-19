@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   Cancel01Icon,
+  GiftIcon,
   HandshakeIcon,
   InstagramIcon,
   Location01Icon,
@@ -26,6 +27,7 @@ const stops = [
   { id: 'lineup', label: 'Lineup', icon: Mic01Icon },
   { id: 'visit', label: 'Visit', icon: Location01Icon, page: '/visit' },
   { id: 'shop', label: 'Shop', icon: ShoppingBag01Icon, page: '/shop' },
+  { id: 'merch', label: 'Merch', icon: GiftIcon, page: '/merch' },
   { id: 'join', label: 'Get involved', icon: HandshakeIcon, page: '/join' },
   { id: 'letter', label: 'Contact', icon: Mail01Icon },
 ] as { id: string; label: string; icon: typeof PartyIcon; page?: string }[];

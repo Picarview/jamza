@@ -98,10 +98,10 @@ export const festival = {
         { src: '/images/festival/concert-2.webp', alt: 'A singer with eyes closed at the microphone' },
       ],
       body: [
-        'The main live music experience: ten female artists, guest performers, poets and Beda’s House Band performing iconic Christmas songs.',
+        'The main live music experience: female artists, guest performers, poets and Beda’s House Band performing iconic Christmas songs.',
         'Reimagined classics, live instrumentation and spoken word — a fresh take on the sounds of the season, and the warmth and nostalgia that make Christmas special.',
       ],
-      tags: ['10 female artists', 'Beda’s House Band', 'Guest artists', 'Spoken word', 'AJL Initiative', 'Christmas classics'],
+      tags: ['Female artists', 'Beda’s House Band', 'Guest artists', 'Spoken word', 'AJL Initiative', 'Christmas classics'],
     },
     {
       id: 'after-party',

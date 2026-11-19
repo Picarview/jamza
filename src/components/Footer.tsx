@@ -104,6 +104,7 @@ export function Footer({ settings, partners }: { settings: Settings; partners: P
               ['Tickets', '/#tickets'],
               ['Plan your visit', '/visit'],
               ['Shop', '/shop'],
+              ['Merch', '/merch'],
               ['Get involved', '/join'],
               ['Partners', '/partners'],
             ].map(([label, href]) => (

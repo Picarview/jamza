@@ -1,7 +1,7 @@
 'use server';
 
 import { getPublicClient } from '@/lib/supabase';
-import { forms, type FormKind } from '@/lib/forms';
+import { forms, VOUCHER_PATTERN, type FormKind } from '@/lib/forms';
 import { shopProducts } from '@/content/shop';
 
 export type LetterState = { status: 'idle' | 'sent' | 'error'; message: string };
@@ -51,6 +51,10 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
   for (const field of config.fields) {
     let value = String(form.get(field.name) ?? '').trim();
     if (field.type === 'checkbox') value = value ? 'Yes' : '';
+    if (field.name === 'code') {
+      value = value.toUpperCase().replace(/\s+/g, '');
+      if (value && !VOUCHER_PATTERN.test(value)) return { status: 'error', message: 'That code doesn’t look right — check it and try again.' };
+    }
     if (field.required && !value) return { status: 'error', message: `Please fill in “${field.label.replace(/[.:].*$/, '')}”.` };
     if (value.length > (field.maxLength ?? 500)) return { status: 'error', message: `“${field.label}” is too long.` };
     if (field.type === 'select' && value && !field.options?.includes(value)) return { status: 'error', message: 'Please choose an option.' };
@@ -65,11 +69,15 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
 
   // Shop: quantities per product, sent as qty-<id>.
   let items = '';
-  if (kind === 'shop') {
+  if (kind === 'shop' || kind === 'merch') {
     const lines = shopProducts
+      .filter((p) => p.group === kind)
       .map((p) => ({ p, qty: Number(form.get(`qty-${p.id}`) ?? 0) }))
       .filter(({ qty }) => Number.isInteger(qty) && qty > 0 && qty <= 50)
-      .map(({ p, qty }) => `• ${qty} × ${p.name}`);
+      .map(({ p, qty }) => {
+        const size = String(form.get(`size-${p.id}`) ?? '');
+        return `• ${qty} × ${p.name}${p.sizes?.includes(size) ? ` (${size})` : ''}`;
+      });
     if (!lines.length) return { status: 'error', message: 'Add at least one item to your pre-order.' };
     items = `Items:\n${lines.join('\n')}\n\n`;
   }
@@ -102,5 +110,5 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
         : 'That didn’t go through. Please try again or email us directly.',
     };
   }
-  return { status: 'sent', message: 'We’ve got it — the JAMZA! team will be in touch by email.' };
+  return { status: 'sent', message: config.sent ?? 'We’ve got it — the JAMZA! team will be in touch by email.' };
 }

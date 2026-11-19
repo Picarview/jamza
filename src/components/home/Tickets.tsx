@@ -10,6 +10,7 @@ import {
 import { festival } from '@/content/festival';
 import { Icon } from '../Icon';
 import { Reveal } from '../Reveal';
+import { VoucherBox } from './VoucherBox';
 
 type Ticket = (typeof festival.tickets)[number];
 
@@ -169,6 +170,10 @@ export function Tickets() {
               Ask about group tickets <Icon icon={ArrowUpRight01Icon} size={18} />
             </a>
           )}
+        </Reveal>
+
+        <Reveal className="mt-5">
+          <VoucherBox />
         </Reveal>
       </div>
     </section>

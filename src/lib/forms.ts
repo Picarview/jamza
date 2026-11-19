@@ -17,7 +17,7 @@ export type Field = {
   half?: boolean;
 };
 
-export type FormKind = 'shop' | 'shuttle' | 'vendor' | 'sales-team';
+export type FormKind = 'shop' | 'merch' | 'shuttle' | 'vendor' | 'sales-team' | 'voucher';
 
 const contact: Field[] = [
   { name: 'name', label: 'Full name', required: true, autoComplete: 'name', maxLength: 100, half: true },
@@ -25,7 +25,24 @@ const contact: Field[] = [
   { name: 'email', label: 'Email', type: 'email', required: true, autoComplete: 'email', maxLength: 200 },
 ];
 
-export const forms: Record<FormKind, { title: string; subject: (v: Record<string, string>) => string; fields: Field[] }> = {
+/** Voucher codes: letters, numbers and dashes. */
+export const VOUCHER_PATTERN = /^[A-Z0-9-]{4,24}$/;
+
+export const forms: Record<
+  FormKind,
+  { title: string; subject: (v: Record<string, string>) => string; fields: Field[]; sent?: string }
+> = {
+  voucher: {
+    title: 'Ticket voucher',
+    subject: (v) => `Voucher ${v.code} — ${v.name}`,
+    sent: 'Code received! We’ll check it and email your free ticket.',
+    fields: [{ name: 'code', label: 'Voucher code', required: true, maxLength: 24 }, ...contact],
+  },
+  merch: {
+    title: 'Merch pre-order',
+    subject: (v) => `Merch pre-order — ${v.name}`,
+    fields: [...contact, { name: 'notes', label: 'Anything else?', type: 'textarea', maxLength: 1000 }],
+  },
   shop: {
     title: 'Shop pre-order',
     subject: (v) => `Shop pre-order — ${v.name}`,
