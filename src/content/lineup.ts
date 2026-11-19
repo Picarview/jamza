@@ -154,7 +154,7 @@ const entries: Entry[] = [
   },
   {
     slug: 'akoto',
-    name: 'Akoto', // brief says "Akoto (Ksi)" — confirm billing name; photo & bio to come
+    name: 'Akoto', // photo & bio to come
     role: 'Special guest',
     tier: 'guest',
     handle: 'divaakoto',
