@@ -36,6 +36,7 @@ export type Product = {
   sizes: string; // comma separated
   blurb: string;
   visible: boolean;
+  sort: number; // display order, lowest first
 };
 
 export type Artist = {

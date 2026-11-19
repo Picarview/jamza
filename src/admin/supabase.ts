@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { InboxKind, InboxStatus, Message, Voucher } from './types';
+import type { InboxKind, InboxStatus, Message, Product, Voucher } from './types';
 
 /**
  * Browser client for the admin. Uses the public anon key; what a signed-in user can read or
@@ -58,6 +58,63 @@ export const fromVoucher = (v: Voucher) => ({
   active: v.active,
   expires_at: v.expiresAt || null,
 });
+
+/* ---------- Shop products ---------- */
+
+export const toProduct = (r: Row): Product => ({
+  id: String(r.id),
+  name: String(r.name ?? ''),
+  group: r.section === 'merch' ? 'merch' : 'shop',
+  price: r.price === null || r.price === undefined ? '' : String(Number(r.price)),
+  image: String(r.image ?? ''),
+  sizes: String(r.sizes ?? ''),
+  blurb: String(r.blurb ?? ''),
+  visible: Boolean(r.visible),
+  sort: Number(r.sort ?? 1000),
+});
+
+export const fromProduct = (p: Product) => ({
+  id: p.id,
+  name: p.name.trim(),
+  section: p.group,
+  price: p.price.trim() === '' ? null : Number(p.price),
+  image: p.image.trim(),
+  sizes: p.sizes
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(', '),
+  blurb: p.blurb.trim(),
+  visible: p.visible,
+  sort: p.sort,
+});
+
+/* ---------- Image uploads ---------- */
+
+/**
+ * Shrink a photo in the browser (max 1600px, WebP) and upload it to a public bucket. Phone photos
+ * are often 5–10 MB; this keeps them well under the bucket limit and fast on the site.
+ */
+export async function uploadImage(bucket: string, file: File): Promise<string> {
+  const supabase = adminClient();
+  if (!supabase) throw new Error('Uploads need the database connection.');
+  if (!/^image\/(png|jpe?g|webp)$/.test(file.type)) throw new Error('Use a JPG, PNG or WebP photo.');
+
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, 'image/webp', 0.85));
+  if (!blob) throw new Error('Couldn’t read that photo.');
+
+  const path = `${crypto.randomUUID()}.webp`;
+  const { error } = await supabase.storage.from(bucket).upload(path, blob, { contentType: 'image/webp', cacheControl: '31536000' });
+  if (error) throw new Error(/bucket/i.test(error.message) ? 'Photo storage isn’t set up yet — run the shop migration.' : explain(error));
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
 
 /** Friendly wording for the errors an admin can actually hit. */
 export function explain(error: { message?: string; code?: string } | null): string {

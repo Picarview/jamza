@@ -68,12 +68,14 @@ insert into public.jamza_partners (id, name, url, image, tagline, visible, sort)
 on conflict (id) do nothing;
 
 insert into public.jamza_products (id, name, section, price, image, sizes, blurb, visible, sort) values
-  ('tee-purple', 'JAMZA! tee — Purple', 'shop', null, '/images/shop/tee-purple.webp', 'S, M, L, XL, XXL', 'Deep purple with the cream JAMZA! mark and half-moon hem.', true, 1),
-  ('tee-cream', 'JAMZA! tee — Cream', 'shop', null, '/images/shop/tee-cream.webp', 'S, M, L, XL, XXL', 'Soft cream fading to lilac, with the purple JAMZA! mark.', true, 2),
+  ('caxixi', 'Caxixi', 'shop', 80, '/images/shop/caxixi.webp', '', 'A woven basket shaker. Bring your own rhythm to the Concert.', true, 1),
+  ('glow-stick', 'JAMZA! glow sticks', 'shop', 5, '/images/shop/glow-sticks.webp', '', 'For the After Party, obviously.', true, 2),
   ('cake', 'JAMZA! cake', 'merch', null, '', '', 'A festive treat, baked for the night.', true, 3),
   ('bracelet', 'JAMZA! bracelet', 'merch', null, '', '', 'Wear the festival on your wrist.', true, 4),
   ('necklace', 'JAMZA! necklace', 'merch', null, '', '', 'A keepsake from the night.', true, 5),
-  ('glow-stick', 'JAMZA! glow sticks', 'merch', null, '', '', 'For the After Party, obviously.', true, 6)
+  -- T-shirts are on hold: kept hidden so they can be switched back on from the admin.
+  ('tee-purple', 'JAMZA! tee — Purple', 'shop', null, '/images/shop/tee-purple.webp', 'S, M, L, XL, XXL', 'Deep purple with the cream JAMZA! mark and half-moon hem.', false, 10),
+  ('tee-cream', 'JAMZA! tee — Cream', 'shop', null, '/images/shop/tee-cream.webp', 'S, M, L, XL, XXL', 'Soft cream fading to lilac, with the purple JAMZA! mark.', false, 11)
 on conflict (id) do nothing;
 
 commit;

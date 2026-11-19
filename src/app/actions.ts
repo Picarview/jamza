@@ -1,5 +1,9 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+import { createClient } from '@supabase/supabase-js';
+import { festival } from '@/content/festival';
+import { readPublicConfig } from '@/lib/env';
 import { getPublicClient } from '@/lib/supabase';
 import { forms, VOUCHER_PATTERN, type FormKind } from '@/lib/forms';
 import { getPublicContent } from '@/lib/content';
@@ -71,16 +75,19 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
   let items = '';
   if (kind === 'shop' || kind === 'merch') {
     const { products } = await getPublicContent();
-    const lines = products
+    const picked = products
       .filter((p) => p.group === kind)
       .map((p) => ({ p, qty: Number(form.get(`qty-${p.id}`) ?? 0) }))
-      .filter(({ qty }) => Number.isInteger(qty) && qty > 0 && qty <= 50)
-      .map(({ p, qty }) => {
-        const size = String(form.get(`size-${p.id}`) ?? '');
-        return `• ${qty} × ${p.name}${p.sizes?.includes(size) ? ` (${size})` : ''}`;
-      });
-    if (!lines.length) return { status: 'error', message: 'Add at least one item to your pre-order.' };
-    items = `Items:\n${lines.join('\n')}\n\n`;
+      .filter(({ qty }) => Number.isInteger(qty) && qty > 0 && qty <= 50);
+    if (!picked.length) return { status: 'error', message: 'Add at least one item to your pre-order.' };
+    const lines = picked.map(({ p, qty }) => {
+      const size = String(form.get(`size-${p.id}`) ?? '');
+      const cost = p.price !== null ? ` — ${festival.currency} ${qty * p.price}` : '';
+      return `• ${qty} × ${p.name}${p.sizes?.includes(size) ? ` (${size})` : ''}${cost}`;
+    });
+    // Prices come from the server's copy of the products, never from the form.
+    const total = picked.every(({ p }) => p.price !== null) ? picked.reduce((sum, { p, qty }) => sum + qty * (p.price ?? 0), 0) : null;
+    items = `Items:\n${lines.join('\n')}\n${total !== null ? `Total: ${festival.currency} ${total}\n` : ''}\n`;
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email ?? '')) {
@@ -134,4 +141,26 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
   if (error && missing(error.code)) ({ error } = await client.rpc('jamza_submit_message', message));
   if (error) return { status: 'error', message: busy(error.message) };
   return { status: 'sent', message: config.sent ?? 'We’ve got it — the JAMZA! team will be in touch by email.' };
+}
+
+/**
+ * Refresh the shop page after an admin edits products, so changes show straight away instead of
+ * within a minute. Only a signed-in admin can trigger it: the access token is checked against
+ * jamza_is_admin() in the database.
+ */
+export async function refreshShop(accessToken: string): Promise<boolean> {
+  if (typeof accessToken !== 'string' || accessToken.length > 4096) return false;
+  try {
+    const { url, key } = readPublicConfig();
+    const asUser = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      global: { headers: { Authorization: `Bearer ${accessToken}` } },
+    });
+    const { data: isAdmin, error } = await asUser.rpc('jamza_is_admin');
+    if (error || isAdmin !== true) return false;
+    revalidatePath('/shop');
+    return true;
+  } catch {
+    return false;
+  }
 }

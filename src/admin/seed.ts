@@ -13,7 +13,7 @@ export function seed(): Db {
   return {
     messages: [
       { id: 'm1', kind: 'voucher', name: 'Sample Guest', email: 'guest@example.com', subject: 'Voucher JAMZA-GIFT-01 — Sample Guest', body: '[Ticket voucher]\n\nVoucher code: JAMZA-GIFT-01\nFull name: Sample Guest\nPhone / WhatsApp: 020 000 0000', date: ago(2), status: 'new' },
-      { id: 'm2', kind: 'shop', name: 'Sample Buyer', email: 'buyer@example.com', subject: 'Shop pre-order — Sample Buyer', body: '[Shop pre-order]\n\nItems:\n• 2 × JAMZA! tee — Purple (M)\n\nFull name: Sample Buyer\nPhone / WhatsApp: 020 000 0001', date: ago(5), status: 'new' },
+      { id: 'm2', kind: 'shop', name: 'Sample Buyer', email: 'buyer@example.com', subject: 'Shop pre-order — Sample Buyer', body: '[Shop pre-order]\n\nItems:\n• 2 × Caxixi — GHC 160\nTotal: GHC 160\n\nFull name: Sample Buyer\nPhone / WhatsApp: 020 000 0001', date: ago(5), status: 'new' },
       { id: 'm7', kind: 'merch', name: 'Sample Raver', email: 'raver@example.com', subject: 'Merch pre-order — Sample Raver', body: '[Merch pre-order]\n\nItems:\n• 4 × JAMZA! glow sticks\n• 1 × JAMZA! bracelet\n\nFull name: Sample Raver', date: ago(8), status: 'new' },
       { id: 'm3', kind: 'vendor', name: 'Sample Studio', email: 'studio@example.com', subject: 'Vendor application — Sample Studio', body: '[Vendor application]\n\nBusiness or brand name: Sample Studio\nWhat do you sell?: Art & prints\nTell us about your products: Hand-printed posters and tote bags.', date: ago(26), status: 'read' },
       { id: 'm4', kind: 'sales-team', name: 'Sample Student', email: 'student@example.com', subject: 'Ticket Sales Team — Sample Student', body: '[Ticket Sales Team]\n\nUniversity, organisation or community: Sample University\nWhy do you want to join the team?: I love JAMZA! and know lots of people who would come.', date: ago(30), status: 'new' },
@@ -25,7 +25,7 @@ export function seed(): Db {
       { id: 'v2', code: 'PRESS-2026', note: 'Press & media', maxUses: 10, uses: 3, active: true, expiresAt: '2026-12-19', createdAt: ago(96) },
       { id: 'v3', code: 'ARTIST-PLUS1', note: 'Artist guests', maxUses: 20, uses: 20, active: false, expiresAt: '', createdAt: ago(120) },
     ],
-    products: shopProducts.map((p) => ({
+    products: shopProducts.map((p, i) => ({
       id: p.id,
       name: p.name,
       group: p.group,
@@ -34,6 +34,7 @@ export function seed(): Db {
       sizes: p.sizes?.join(', ') ?? '',
       blurb: p.blurb,
       visible: true,
+      sort: i + 1,
     })),
     artists: lineup.map((a) => ({
       id: a.id,

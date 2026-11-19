@@ -7,14 +7,17 @@ import { baseOpenGraph } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Shop',
-  description:
-    'Official JAMZA! tees in the festival colours. Pre-order now, collect on festival day.',
+  description: 'Caxixi shakers, glow sticks and more from the JAMZA! shop. Pre-order now, collect on festival day.',
   alternates: { canonical: '/shop' },
-  openGraph: { ...baseOpenGraph, url: '/shop', title: 'JAMZA! shop — official tees', images: ['/images/shop/tee-purple.webp'] },
+  openGraph: { ...baseOpenGraph, url: '/shop', title: 'JAMZA! shop', images: ['/images/shop/caxixi.webp'] },
 };
 
+// Shop items are managed in the admin; saving there refreshes this page straight away, and this
+// is the safety net.
+export const revalidate = 60;
+
 const steps = [
-  ['Pick', 'Choose your items and sizes.'],
+  ['Pick', 'Choose your items.'],
   ['Send', 'Send your pre-order — no payment yet.'],
   ['Pay', 'We email you the total and how to pay.'],
   ['Collect', 'Pick it up at the shop stand on 19 December.'],
@@ -24,7 +27,7 @@ export default async function ShopPage() {
   const { products, settings } = await getPublicContent();
   return (
     <>
-      <PageHeader tone="tomato" eyebrow="JAMZA! shop" title="Shop the night" intro="Official JAMZA! tees in the festival colours. Pre-order now and skip the queue on festival day.">
+      <PageHeader tone="tomato" eyebrow="JAMZA! shop" title="Shop the night" intro="Shakers, glow sticks and more for the night. Pre-order now and skip the queue on festival day.">
         <ol className="mt-10 grid max-w-4xl gap-3 sm:grid-cols-4">
           {steps.map(([title, text], i) => (
             <li key={title} className="glass rounded-[1.5rem] p-4">

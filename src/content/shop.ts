@@ -2,8 +2,8 @@ import { CakeIcon, DiamondIcon, FlashIcon, NecklaceIcon } from '@hugeicons/core-
 import type { IconSvgElement } from '@hugeicons/react';
 
 /**
- * Everything is a pre-order collected on festival day. Prices, photos and the pre-order
- * deadline are still to be confirmed; fill them in here and the page updates.
+ * Everything is a pre-order collected on festival day. The pre-order deadline is still to be
+ * confirmed; set it here (or in Settings once those go live) and the page updates.
  */
 export const shop = {
   deadline: null as string | null, // TODO: pre-order deadline, e.g. 'Sunday 14 December'
@@ -22,33 +22,56 @@ export type Product = {
   sizes?: string[];
 };
 
-const teeSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+// T-shirts are on hold (not in the 2026 merch plan). Uncomment to bring them back.
+// const teeSizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
+/**
+ * JAMZA! shop items are managed in the admin panel (jamza_products, section 'shop'); this list is
+ * only the fallback if the database can't be reached. Festival merch stays here for now.
+ */
 export const shopProducts: Product[] = [
-  // The JAMZA! shop: apparel you keep wearing after the night.
+  // The JAMZA! shop
   {
-    id: 'tee-purple',
-    name: 'JAMZA! tee — Purple',
-    blurb: 'Deep purple with the cream JAMZA! mark and half-moon hem.',
-    price: null,
+    id: 'caxixi',
+    name: 'Caxixi',
+    blurb: 'A woven basket shaker. Bring your own rhythm to the Concert.',
+    price: 80,
     group: 'shop',
-    image: '/images/shop/tee-purple.webp',
+    image: '/images/shop/caxixi.webp',
+    color: 'bg-ember',
+  },
+  {
+    id: 'glow-stick',
+    name: 'JAMZA! glow sticks',
+    blurb: 'For the After Party, obviously.',
+    price: 5,
+    group: 'shop',
+    image: '/images/shop/glow-sticks.webp',
+    icon: FlashIcon,
     color: 'bg-plum',
-    sizes: teeSizes,
   },
-  {
-    id: 'tee-cream',
-    name: 'JAMZA! tee — Cream',
-    blurb: 'Soft cream fading to lilac, with the purple JAMZA! mark.',
-    price: null,
-    group: 'shop',
-    image: '/images/shop/tee-cream.webp',
-    color: 'bg-peach',
-    sizes: teeSizes,
-  },
+  // {
+  //   id: 'tee-purple',
+  //   name: 'JAMZA! tee — Purple',
+  //   blurb: 'Deep purple with the cream JAMZA! mark and half-moon hem.',
+  //   price: null,
+  //   group: 'shop',
+  //   image: '/images/shop/tee-purple.webp',
+  //   color: 'bg-plum',
+  //   sizes: teeSizes,
+  // },
+  // {
+  //   id: 'tee-cream',
+  //   name: 'JAMZA! tee — Cream',
+  //   blurb: 'Soft cream fading to lilac, with the purple JAMZA! mark.',
+  //   price: null,
+  //   group: 'shop',
+  //   image: '/images/shop/tee-cream.webp',
+  //   color: 'bg-peach',
+  //   sizes: teeSizes,
+  // },
   // Festival merch: for the day itself.
   { id: 'cake', name: 'JAMZA! cake', blurb: 'A festive treat, baked for the night.', price: null, group: 'merch', icon: CakeIcon, color: 'bg-tomato' },
   { id: 'bracelet', name: 'JAMZA! bracelet', blurb: 'Wear the festival on your wrist.', price: null, group: 'merch', icon: DiamondIcon, color: 'bg-pine' },
   { id: 'necklace', name: 'JAMZA! necklace', blurb: 'A keepsake from the night.', price: null, group: 'merch', icon: NecklaceIcon, color: 'bg-plum' },
-  { id: 'glow-stick', name: 'JAMZA! glow sticks', blurb: 'For the After Party, obviously.', price: null, group: 'merch', icon: FlashIcon, color: 'bg-ember' },
 ];

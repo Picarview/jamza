@@ -2,19 +2,21 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { seed } from './seed';
-import { adminClient, explain, fromMessage, fromVoucher, toMessage, toVoucher } from './supabase';
-import type { CollectionKey, Db, Message, Row, Settings, Voucher } from './types';
+import { refreshShop } from '@/app/actions';
+import { adminClient, explain, fromMessage, fromProduct, fromVoucher, toMessage, toProduct, toVoucher } from './supabase';
+import type { CollectionKey, Db, Message, Product, Row, Settings, Voucher } from './types';
 
 /**
  * Admin data store.
  *
- * - Supabase mode (env configured): sign-in required; Inbox and Vouchers read and write the live
- *   jamza_messages / jamza_vouchers tables. Shop, Lineup, Partners and Settings stay on the site's
- *   content files while the public site is static, so they're not editable here yet.
+ * - Supabase mode (env configured): sign-in required; Inbox, Vouchers and the JAMZA! shop read and
+ *   write the live jamza_messages / jamza_vouchers / jamza_products tables. Lineup, Partners,
+ *   festival merch and Settings stay on the site's content files while the rest of the public site
+ *   is static, so they're not editable here yet.
  * - Demo mode (no env): everything is sample data saved in this browser.
  */
 const DEMO_KEY = 'jamza.admin.demo.v1';
-export const LIVE_COLLECTIONS: CollectionKey[] = ['messages', 'vouchers'];
+export const LIVE_COLLECTIONS: CollectionKey[] = ['messages', 'vouchers', 'products'];
 
 export const newId = () => crypto.randomUUID();
 
@@ -41,11 +43,13 @@ type Admin = {
 const Ctx = createContext<Admin | null>(null);
 
 const PAGE = 500;
-async function loadAll(table: string, order: string) {
+async function loadAll(table: string, order: string, ascending = false, filter?: [string, string]) {
   const supabase = adminClient()!;
   const rows: Record<string, unknown>[] = [];
   for (let from = 0; ; from += PAGE) {
-    const { data, error } = await supabase.from(table).select('*').order(order, { ascending: false }).range(from, from + PAGE - 1);
+    let query = supabase.from(table).select('*');
+    if (filter) query = query.eq(filter[0], filter[1]);
+    const { data, error } = await query.order(order, { ascending }).order('id').range(from, from + PAGE - 1);
     if (error) throw new Error(explain(error));
     rows.push(...data);
     if (data.length < PAGE) return rows;
@@ -55,7 +59,7 @@ async function loadAll(table: string, order: string) {
 export function AdminProvider({ children }: { children: ReactNode }) {
   const supabase = adminClient();
   const mode: Admin['mode'] = supabase ? 'supabase' : 'demo';
-  const [db, setDb] = useState<Db>(() => (supabase ? { ...seed(), messages: [], vouchers: [] } : seed()));
+  const [db, setDb] = useState<Db>(() => (supabase ? { ...seed(), messages: [], vouchers: [], products: [] } : seed()));
   const [ready, setReady] = useState(false);
   const [auth, setAuth] = useState<AuthState>(supabase ? { status: 'loading' } : { status: 'ready', email: 'demo' });
   const loadedFor = useRef<string | null>(null);
@@ -80,8 +84,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   /* ----- Supabase mode: session → allowlist → data ----- */
   const load = useCallback(async () => {
-    const [messages, vouchers] = await Promise.all([loadAll('jamza_messages', 'date'), loadAll('jamza_vouchers', 'created_at')]);
-    setDb((d) => ({ ...d, messages: messages.map(toMessage), vouchers: vouchers.map(toVoucher) }));
+    const [messages, vouchers, products] = await Promise.all([
+      loadAll('jamza_messages', 'date'),
+      loadAll('jamza_vouchers', 'created_at'),
+      loadAll('jamza_products', 'sort', true, ['section', 'shop']),
+    ]);
+    setDb((d) => ({ ...d, messages: messages.map(toMessage), vouchers: vouchers.map(toVoucher), products: products.map(toProduct) }));
     setReady(true);
   }, []);
 
@@ -133,6 +141,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   }, [mode, auth.status, load]);
 
   const value = useMemo<Admin>(() => {
+    // Tell the site to rebuild /shop now rather than on its next one-minute refresh.
+    const publishShop = async () => {
+      const { data } = await supabase!.auth.getSession();
+      if (data.session) await refreshShop(data.session.access_token).catch(() => false);
+    };
+
     const local = <K extends CollectionKey>(key: K, row: Row<K>) =>
       setDb((d) => {
         const list = d[key] as Row<K>[];
@@ -170,14 +184,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           if (error) throw new Error(explain(error));
           return local(key, toVoucher(data) as Row<typeof key>);
         }
+        if (key === 'products') {
+          const { data, error } = await supabase!.from('jamza_products').upsert(fromProduct(row as Product)).select().single();
+          if (error) throw new Error(explain(error));
+          void publishShop();
+          return local(key, toProduct(data) as Row<typeof key>);
+        }
         throw new Error('This section isn’t connected yet — it still comes from the site’s content files.');
       },
       async remove(key, id) {
         if (mode === 'supabase') {
-          const table = key === 'messages' ? 'jamza_messages' : key === 'vouchers' ? 'jamza_vouchers' : null;
+          const tables: Partial<Record<CollectionKey, string>> = { messages: 'jamza_messages', vouchers: 'jamza_vouchers', products: 'jamza_products' };
+          const table = tables[key];
           if (!table) throw new Error('This section isn’t connected yet.');
           const { error } = await supabase!.from(table).delete().eq('id', id);
           if (error) throw new Error(explain(error));
+          if (key === 'products') void publishShop();
         }
         setDb((d) => {
           const next = { ...d, [key]: (d[key] as { id: string }[]).filter((r) => r.id !== id) };

@@ -2,6 +2,7 @@
 
 import { VOUCHER_PATTERN } from '@/lib/forms';
 import { newId, useAdmin } from '../store';
+import { uploadImage } from '../supabase';
 import type { Artist, Partner, Product, Voucher } from '../types';
 import { Badge, CollectionTable, NotLiveYet, PageTitle, randomCode, type FieldDef } from '../ui';
 
@@ -71,40 +72,59 @@ export function Vouchers() {
 
 /* ---------- Shop ---------- */
 
+const money = /^\d{1,7}(\.\d{1,2})?$/;
+
 export function Shop() {
   const { db, save, remove, mode } = useAdmin();
-  if (mode === 'supabase') return <NotLiveYet title="Shop" what="Products" />;
+  // Festival merch is still on the site's content files; this screen runs the JAMZA! shop.
+  const rows = db.products.filter((p) => p.group === 'shop');
   return (
     <>
-      <PageTitle title="Shop" intro="JAMZA! shop items and festival merch. Pre-orders arrive in the inbox." />
+      <PageTitle
+        title="Shop"
+        intro="Items in the JAMZA! shop. Changes show on the site straight away; pre-orders arrive in the inbox with a total."
+      />
       <CollectionTable<Product>
-        rows={db.products}
-        noun="product"
-        search={(p) => `${p.name} ${p.group}`}
-        blank={() => ({ id: newId(), name: '', group: 'shop', price: '', image: '', sizes: '', blurb: '', visible: true })}
+        rows={rows}
+        noun="item"
+        search={(p) => `${p.name} ${p.blurb}`}
+        blank={() => ({
+          id: newId(),
+          name: '',
+          group: 'shop',
+          price: '',
+          image: '',
+          sizes: '',
+          blurb: '',
+          visible: true,
+          sort: Math.max(0, ...rows.map((r) => r.sort)) + 1,
+        })}
+        validate={(p) => {
+          p.price = p.price.trim().replace(/^(GHC|GHS|GH₵|₵)\s*/i, '');
+          if (p.price && !money.test(p.price)) return 'Price must be a number, e.g. 80 or 12.50.';
+          if (p.sort < 1) p.sort = 1;
+          return null;
+        }}
         columns={[
-          { label: 'Product', cell: (p) => <span className="flex items-center gap-3">{thumb(p.image)}{p.name}</span> },
-          { label: 'Section', cell: (p) => <Badge tone={p.group === 'shop' ? 'plum' : 'red'}>{p.group === 'shop' ? 'JAMZA! shop' : 'Festival merch'}</Badge> },
+          { label: 'Item', cell: (p) => <span className="flex items-center gap-3">{thumb(p.image)}{p.name}</span> },
           { label: 'Price', cell: (p) => (p.price ? `GHC ${p.price}` : <span className="text-plum/50">Price soon</span>) },
           { label: 'Sizes', cell: (p) => <span className="text-plum/70">{p.sizes || '—'}</span> },
+          { label: 'Order', cell: (p) => <span className="tabular-nums text-plum/60">{p.sort}</span> },
           { label: 'Status', cell: (p) => shown(p.visible) },
         ]}
         fields={[
           { name: 'name', label: 'Name', required: true },
-          {
-            name: 'group',
-            label: 'Section',
-            type: 'select',
-            half: true,
-            options: [
-              { value: 'shop', label: 'JAMZA! shop' },
-              { value: 'merch', label: 'Festival merch' },
-            ],
-          },
           { name: 'price', label: 'Price (GHC)', half: true, placeholder: 'Leave empty for “Price soon”' },
-          { name: 'image', label: 'Photo', type: 'image' },
-          { name: 'sizes', label: 'Sizes', placeholder: 'S, M, L, XL, XXL', help: 'Comma separated. Leave empty if it has no sizes.' },
-          { name: 'blurb', label: 'Description', type: 'textarea' },
+          { name: 'sort', label: 'Position', type: 'number', half: true, help: '1 shows first.' },
+          {
+            name: 'image',
+            label: 'Photo',
+            type: 'image',
+            upload: mode === 'supabase' ? (file) => uploadImage('shop-images', file) : undefined,
+            help: 'JPG, PNG or WebP. It’s resized automatically.',
+          },
+          { name: 'blurb', label: 'Description', type: 'textarea', placeholder: 'One or two short lines.' },
+          { name: 'sizes', label: 'Sizes', placeholder: 'e.g. S, M, L', help: 'Optional. Comma separated; leave empty if it has no sizes.' },
           visibleField,
         ]}
         onSave={(p) => save('products', p)}

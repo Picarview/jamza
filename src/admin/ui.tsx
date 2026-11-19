@@ -1,8 +1,8 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Add01Icon, Cancel01Icon, Delete02Icon, RefreshIcon, Search01Icon } from '@hugeicons/core-free-icons';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Add01Icon, Cancel01Icon, Delete02Icon, ImageUpload01Icon, RefreshIcon, Search01Icon } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/Icon';
 
 /* ---------- Layout bits ---------- */
@@ -87,6 +87,8 @@ export type FieldDef = {
   help?: string;
   required?: boolean;
   half?: boolean;
+  /** Image fields: upload a file and return its public URL. Without it, the field takes a URL. */
+  upload?: (file: File) => Promise<string>;
 };
 
 const input =
@@ -96,6 +98,55 @@ export function randomCode(prefix = 'JAMZA') {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
   const part = Array.from({ length: 6 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
   return `${prefix}-${part}`;
+}
+
+function ImageUpload({ value, set, upload }: { value: string; set: (v: unknown) => void; upload: (file: File) => Promise<string> }) {
+  const file = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const pick = async (f?: File) => {
+    if (!f) return;
+    setBusy(true);
+    setError('');
+    try {
+      set(await upload(f));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+      if (file.current) file.current.value = '';
+    }
+  };
+  return (
+    <span className="mt-1.5 block">
+      <span className="flex items-center gap-3">
+        {value ? (
+          <img src={value} alt="" className="size-20 shrink-0 rounded-xl border-2 border-plum/10 object-cover" />
+        ) : (
+          <span className="grid size-20 shrink-0 place-items-center rounded-xl bg-plum/5 text-plum/30">
+            <Icon icon={ImageUpload01Icon} size={26} />
+          </span>
+        )}
+        <span className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => file.current?.click()}
+            className="inline-flex items-center gap-2 rounded-full bg-plum px-4 py-2.5 text-sm font-bold text-cream disabled:opacity-60"
+          >
+            <Icon icon={ImageUpload01Icon} size={16} /> {busy ? 'Uploading…' : value ? 'Replace photo' : 'Upload photo'}
+          </button>
+          {value && !busy && (
+            <button type="button" onClick={() => set('')} className="rounded-full border-2 border-plum/15 px-4 py-2 text-sm font-bold hover:border-plum/40">
+              Remove
+            </button>
+          )}
+        </span>
+      </span>
+      <input ref={file} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" tabIndex={-1} onChange={(e) => pick(e.target.files?.[0])} />
+      {error && <span className="mt-2 block text-sm font-semibold text-tomato">{error}</span>}
+    </span>
+  );
 }
 
 function FieldInput({ def, value, set }: { def: FieldDef; value: unknown; set: (v: unknown) => void }) {
@@ -134,7 +185,9 @@ function FieldInput({ def, value, set }: { def: FieldDef; value: unknown; set: (
         </span>
       );
     case 'image':
-      return (
+      return def.upload ? (
+        <ImageUpload value={v ?? ''} set={set} upload={def.upload} />
+      ) : (
         <span className="mt-1.5 flex items-center gap-3">
           {v ? <img src={v} alt="" className="size-14 shrink-0 rounded-xl border-2 border-plum/10 object-cover" /> : <span className="size-14 shrink-0 rounded-xl bg-plum/5" />}
           <input value={v ?? ''} onChange={(e) => set(e.target.value)} placeholder={def.placeholder ?? '/images/… or https://'} className={`${input} mt-0`} />

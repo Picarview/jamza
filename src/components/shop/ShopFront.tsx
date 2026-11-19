@@ -14,7 +14,7 @@ type Cart = Record<string, { qty: number; size?: string }>;
 const price = (p: Product) => (p.price !== null ? `${festival.currency} ${p.price}` : 'Price soon');
 
 const copy = {
-  shop: { eyebrow: 'The JAMZA! shop', title: 'Wear it after the night', side: 'Official JAMZA! tees in the festival colours.' },
+  shop: { eyebrow: 'The JAMZA! shop', title: 'Bring the noise', side: 'Shake it, wave it, light it up. Your kit for the night.' },
   merch: { eyebrow: 'Festival merch', title: 'For the night itself', side: 'Little extras to make the day yours.' },
 };
 
@@ -113,6 +113,9 @@ export function ShopFront({ group, note, products }: { group: 'shop' | 'merch'; 
             </div>
             <p className="max-w-xs text-plum/70">{copy[group].side}</p>
           </Reveal>
+          {!items.length && (
+            <p className="mt-12 rounded-[2rem] border-2 border-dashed border-plum/20 p-8 text-lg text-plum/70">New items are on the way. Check back soon.</p>
+          )}
           <ul className={`mt-12 grid gap-8 ${group === 'shop' ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
             {items.map((p, i) => {
               const { qty, size } = line(p.id);
@@ -179,6 +182,7 @@ export function ShopFront({ group, note, products }: { group: 'shop' | 'merch'; 
       </section>
 
       {/* Order */}
+      {items.length > 0 && (
       <section id="order" aria-label="Pre-order" className="scroll-mt-20 bg-night py-20 sm:py-28">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <Reveal>
@@ -186,6 +190,7 @@ export function ShopFront({ group, note, products }: { group: 'shop' | 'merch'; 
           </Reveal>
         </div>
       </section>
+      )}
     </>
   );
 }
