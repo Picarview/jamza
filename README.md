@@ -31,9 +31,9 @@ supabase/                Database migrations — unchanged
 
 ## Supabase
 
-**What's connected:** every form on the site (letter, shop & merch pre-orders, shuttle, vendor, sales team) lands in `jamza_messages`; voucher codes are checked and claimed by `jamza_redeem_voucher`; the admin at `/admin` signs in with Supabase Auth and manages the **Inbox**, **Vouchers** and the **JAMZA! shop** (`jamza_products`, section `shop`; photos go to the `shop-images` bucket, and saving refreshes `/shop` straight away).
+**What's connected:** every form on the site (letter, shop & merch pre-orders, shuttle, vendor, sales team) lands in `jamza_messages`; voucher codes are checked and claimed by `jamza_redeem_voucher`; the admin at `/admin` signs in with Supabase Auth and manages the **Inbox**, **Vouchers** and the **JAMZA! shop** (`jamza_products`) and **Merch** (photos go to the `shop-images` bucket; saving refreshes `/shop` and `/merch` straight away).
 
-**What's still static:** lineup, artist pages, partners, festival merch and festival details come from `src/content/*`. They're already seeded in Supabase (`jamza_artists`, `jamza_partners`, `jamza_products`, `jamza_settings`); flip `LIVE_CONTENT` in `src/lib/content.ts` to read them from there.
+**What's still static:** lineup, artist pages, partners and festival details come from `src/content/*`. They're already seeded in Supabase (`jamza_artists`, `jamza_partners`, `jamza_products`, `jamza_settings`); flip `LIVE_CONTENT` in `src/lib/content.ts` to read them from there.
 
 | File | Use |
 | ---- | --- |

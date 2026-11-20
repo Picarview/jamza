@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 import {
   ArrowUpRight01Icon,
   DashboardSquare01Icon,
+  GiftIcon,
   HandshakeIcon,
   InboxIcon,
   Mic01Icon,
@@ -27,6 +28,7 @@ const nav: { href: string; label: string; icon: typeof InboxIcon; data?: Collect
   { href: '/admin/inbox', label: 'Inbox', icon: InboxIcon, data: 'messages' },
   { href: '/admin/vouchers', label: 'Vouchers', icon: Ticket02Icon, data: 'vouchers' },
   { href: '/admin/shop', label: 'Shop', icon: ShoppingBag01Icon, data: 'products' },
+  { href: '/admin/merch', label: 'Merch', icon: GiftIcon, data: 'products' },
   { href: '/admin/lineup', label: 'Lineup', icon: Mic01Icon, data: 'artists' },
   { href: '/admin/partners', label: 'Partners', icon: HandshakeIcon, data: 'partners' },
   { href: '/admin/settings', label: 'Settings', icon: Settings01Icon, data: 'settings' },

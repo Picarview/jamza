@@ -8,10 +8,14 @@ import { baseOpenGraph } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Festival merch',
-  description: 'Pre-order JAMZA! cakes, bracelets, necklaces and glow sticks, and collect them on festival day.',
+  description: 'Pre-order JAMZA! festival merch and collect it on festival day.',
   alternates: { canonical: '/merch' },
   openGraph: { ...baseOpenGraph, url: '/merch', title: 'JAMZA! festival merch — pre-order now' },
 };
+
+// Merch is managed in the admin; saving there refreshes this page straight away, and this is the
+// safety net.
+export const revalidate = 60;
 
 export default async function MerchPage() {
   const { products, settings } = await getPublicContent();
@@ -21,14 +25,19 @@ export default async function MerchPage() {
         tone="pine"
         eyebrow="JAMZA! FESTIVAL 2026 · Merch"
         title="Festival merch"
-        intro="Cakes, bracelets, necklaces and glow sticks for the night. Pre-order now and pick them up on 19 December."
+        intro="Little extras for the night. Pre-order now and pick them up on 19 December."
       >
         <ul className="mt-10 flex flex-wrap gap-3">
           {products
             .filter((p) => p.group === 'merch')
             .map((p) => (
               <li key={p.id} className="glass flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 font-semibold">
-                <span className={`grid size-9 place-items-center rounded-full text-cream ${p.color}`}>{p.icon && <Icon icon={p.icon} size={18} />}</span>
+                {p.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.image} alt="" className="size-9 rounded-full object-cover" />
+                ) : (
+                  <span className={`grid size-9 place-items-center rounded-full text-cream ${p.color}`}>{p.icon && <Icon icon={p.icon} size={18} />}</span>
+                )}
                 {p.name.replace('JAMZA! ', '').replace(/^./, (c) => c.toUpperCase())}
               </li>
             ))}

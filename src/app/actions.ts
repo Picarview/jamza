@@ -144,7 +144,7 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
 }
 
 /**
- * Refresh the shop page after an admin edits products, so changes show straight away instead of
+ * Refresh the shop and merch pages after an admin edits products, so changes show straight away instead of
  * within a minute. Only a signed-in admin can trigger it: the access token is checked against
  * jamza_is_admin() in the database.
  */
@@ -159,6 +159,7 @@ export async function refreshShop(accessToken: string): Promise<boolean> {
     const { data: isAdmin, error } = await asUser.rpc('jamza_is_admin');
     if (error || isAdmin !== true) return false;
     revalidatePath('/shop');
+    revalidatePath('/merch');
     return true;
   } catch {
     return false;

@@ -75,24 +75,34 @@ export function Vouchers() {
 
 const money = /^\d{1,7}(\.\d{1,2})?$/;
 
-export function Shop() {
+const productScreens = {
+  shop: {
+    title: 'Shop',
+    noun: 'item',
+    intro: 'Items in the JAMZA! shop. Changes show on the site straight away; pre-orders arrive in the inbox with a total.',
+  },
+  merch: {
+    title: 'Merch',
+    noun: 'merch item',
+    intro: 'Festival merch for the night itself. Changes show on the site straight away; pre-orders arrive in the inbox with a total.',
+  },
+};
+
+function Products({ group }: { group: Product['group'] }) {
   const { db, save, remove, mode } = useAdmin();
-  // Festival merch is still on the site's content files; this screen runs the JAMZA! shop.
-  const rows = db.products.filter((p) => p.group === 'shop');
+  const screen = productScreens[group];
+  const rows = db.products.filter((p) => p.group === group);
   return (
     <>
-      <PageTitle
-        title="Shop"
-        intro="Items in the JAMZA! shop. Changes show on the site straight away; pre-orders arrive in the inbox with a total."
-      />
+      <PageTitle title={screen.title} intro={screen.intro} />
       <CollectionTable<Product>
         rows={rows}
-        noun="item"
+        noun={screen.noun}
         search={(p) => `${p.name} ${p.blurb}`}
         blank={() => ({
           id: newId(),
           name: '',
-          group: 'shop',
+          group,
           price: '',
           image: '',
           sizes: '',
@@ -115,6 +125,17 @@ export function Shop() {
         ]}
         fields={[
           { name: 'name', label: 'Name', required: true },
+          {
+            name: 'group',
+            label: 'Section',
+            type: 'select',
+            half: true,
+            options: [
+              { value: 'shop', label: 'JAMZA! shop' },
+              { value: 'merch', label: 'Festival merch' },
+            ],
+            help: 'Moves the item between Shop and Merch.',
+          },
           { name: 'price', label: 'Price (GHC)', half: true, placeholder: 'Leave empty for “Price soon”' },
           { name: 'sort', label: 'Position', type: 'number', half: true, help: '1 shows first.' },
           {
@@ -134,6 +155,9 @@ export function Shop() {
     </>
   );
 }
+
+export const Shop = () => <Products group="shop" />;
+export const Merch = () => <Products group="merch" />;
 
 /* ---------- Lineup ---------- */
 

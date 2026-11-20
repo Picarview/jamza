@@ -15,9 +15,9 @@ import type { Post, Settings } from './types';
 /**
  * Public site content.
  *
- * For now the site is mostly static: lineup, partners, festival merch and festival details come
- * from src/content/*. Two things are always live: announcements (jamza_posts) and the JAMZA! shop
- * (jamza_products, section 'shop'), which is managed from the admin panel.
+ * For now the site is mostly static: lineup, partners and festival details come
+ * from src/content/*. Always live: announcements (jamza_posts) and the JAMZA! shop and festival
+ * merch (jamza_products), which are managed from the admin panel.
  *
  * Set LIVE_CONTENT to true to read everything from Supabase instead (the tables are already
  * seeded). Each source then loads independently and falls back to the content files when its
@@ -153,9 +153,6 @@ export type PublicContent = {
   live: { lineup: boolean; partners: boolean; products: boolean; settings: boolean };
 };
 
-const staticShop = staticProducts.filter((p) => p.group === 'shop');
-const staticMerch = staticProducts.filter((p) => p.group === 'merch');
-
 const staticPartners: PartnerTag[] = starterPartners.map((p) => ({ id: p.id, name: p.name, url: p.url, image: p.image ?? '', tagline: p.tagline }));
 
 export const getPublicContent = cache(async (): Promise<PublicContent> => {
@@ -169,16 +166,16 @@ export const getPublicContent = cache(async (): Promise<PublicContent> => {
             async () => (await listAll(client, 'jamza_posts', 'created_at', (q) => q.eq('status', 'Published'))) as unknown as Post[],
             [] as Post[],
           ),
-          // The shop is managed in the admin. An empty result is real (nothing on sale right now);
-          // only an unreachable database falls back to the content file.
-          attempt('shop', async () => (await listAll(client, 'jamza_products', 'sort', (q) => q.eq('section', 'shop'))).map(toProduct), staticShop),
+          // Shop and merch are managed in the admin. An empty result is real (nothing on sale right
+          // now); only an unreachable database falls back to the content file.
+          attempt('products', async () => (await listAll(client, 'jamza_products', 'sort')).map(toProduct), staticProducts),
         ])
-      : [{ value: [] as Post[] }, { value: staticShop, live: false }];
+      : [{ value: [] as Post[] }, { value: staticProducts, live: false }];
     return {
       posts: posts.value.sort((a, b) => b.date.localeCompare(a.date)),
       lineup: staticLineup,
       partners: staticPartners,
-      products: [...shopItems.value, ...staticMerch],
+      products: shopItems.value,
       settings: defaultSettings,
       live: { lineup: false, partners: false, products: Boolean(shopItems.live), settings: false },
     };

@@ -26,8 +26,8 @@ export type Product = {
 // const teeSizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
 /**
- * JAMZA! shop items are managed in the admin panel (jamza_products, section 'shop'); this list is
- * only the fallback if the database can't be reached. Festival merch stays here for now.
+ * Shop and merch items are managed in the admin panel (jamza_products); this list is only the
+ * fallback if the database can't be reached. Icons here are used for merch items without a photo.
  */
 export const shopProducts: Product[] = [
   // The JAMZA! shop

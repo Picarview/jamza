@@ -9,10 +9,10 @@ import type { CollectionKey, Db, Message, Product, Row, Settings, Voucher } from
 /**
  * Admin data store.
  *
- * - Supabase mode (env configured): sign-in required; Inbox, Vouchers and the JAMZA! shop read and
- *   write the live jamza_messages / jamza_vouchers / jamza_products tables. Lineup, Partners,
- *   festival merch and Settings stay on the site's content files while the rest of the public site
- *   is static, so they're not editable here yet.
+ * - Supabase mode (env configured): sign-in required; Inbox, Vouchers, Shop and Merch read and
+ *   write the live jamza_messages / jamza_vouchers / jamza_products tables. Lineup, Partners and
+ *   Settings stay on the site's content files while the rest of the public site is static, so
+ *   they're not editable here yet.
  * - Demo mode (no env): everything is sample data saved in this browser.
  */
 const DEMO_KEY = 'jamza.admin.demo.v1';
@@ -87,7 +87,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const [messages, vouchers, products] = await Promise.all([
       loadAll('jamza_messages', 'date'),
       loadAll('jamza_vouchers', 'created_at'),
-      loadAll('jamza_products', 'sort', true, ['section', 'shop']),
+      loadAll('jamza_products', 'sort', true),
     ]);
     setDb((d) => ({ ...d, messages: messages.map(toMessage), vouchers: vouchers.map(toVoucher), products: products.map(toProduct) }));
     setReady(true);
