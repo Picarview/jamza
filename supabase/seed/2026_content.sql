@@ -64,7 +64,8 @@ insert into public.jamza_partners (id, name, url, image, tagline, visible, sort)
   ('stonehouse', 'Stonehouse', '', '/images/partners/stonehouse.webp', '', true, 7),
   ('kobena-africa', 'Kobena Africa', '', '/images/partners/kobena-africa.webp', '', true, 8),
   ('gtp', 'GTP', '', '/images/partners/gtp.webp', 'Life. Styled.', true, 9),
-  ('icewise', 'Icewise', '', '/images/partners/icewise.webp', '', true, 10)
+  ('icewise', 'Icewise', '', '/images/partners/icewise.webp', '', true, 10),
+  ('panford', 'Panford', '', '/images/partners/panford.webp', '', true, 11)
 on conflict (id) do nothing;
 
 insert into public.jamza_products (id, name, section, price, image, sizes, blurb, visible, sort) values
