@@ -473,8 +473,8 @@ Enam the HADZIVODUSHI aspires to continue her ancestral genre of music and make 
 on conflict (id) do nothing;
 
 insert into public.jamza_partners (id, name, url, image, tagline, visible, sort) values
-  ('wafa-house', 'Wafa House', '', '/images/partners/wafa-house.webp', '', true, 1),
-  ('picarview', 'Picarview', '', '/images/partners/picarview.webp', '', true, 2),
+  ('picarview', 'Picarview', 'https://picarview.com', '/images/partners/picarview.webp', '', true, 1),
+  ('wafa-house', 'Wafa House', '', '/images/partners/wafa-house.webp', '', true, 2),
   ('beda-s-events-center', 'Beda’s Events Center', '', '/images/partners/bedas.webp', 'Our venue', true, 3),
   ('phyr3haus', 'PHYR3HAUS', '', '/images/partners/phyr3haus.webp', '', true, 4),
   ('afrodite-society', 'Afrodite Society', '', '/images/partners/afrodite-society.webp', '', true, 5),
