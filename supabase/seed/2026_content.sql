@@ -37,7 +37,11 @@ The group seeks to revive and reintroduce the traditional Akan Adenkum music pra
   ('teniade', 'teniade', 'Teniadé', 'Afrosoul singer & producer', 'guest', 'tenimuse', '/images/artists/teniade.webp', 'Teniadé is a British-Nigerian afrosoul singer and producer. Her music is an eclectic blend of sultry funk, jazz, soul and afrobeat crafted in Lagos and Accra.
 
 She is greatly inspired by artists such as the legendary Sade, Fela Kuti, Ebo Taylor and Bob Marley.', true, 10),
-  ('akoto', 'akoto', 'Akoto', 'Special guest', 'guest', 'divaakoto', '', '', true, 11),
+  ('akoto', 'akoto', 'Akoto', 'Songwriter, performer & writer', 'guest', 'divaakoto', '/images/artists/akoto.webp', 'Akoto is a multidisciplinary creative hailing from Kumasi, Ghana. She is skilled in songwriting, live music performances, and creative writing.
+
+With experience in the entertainment industry since the age of 15, Akoto is known for blending genres and embracing diverse facets of creativity, setting her apart from industry norms. She champions women’s empowerment, collaboration, and fearlessness through her work.
+
+Her mission is rooted in creativity, representing freedom, multi-dimensionality, and the spirit of a global icon.', true, 11),
   ('leuce', 'leuce', 'Leuce', 'Poet, writer & artist · Founder of Break Time', 'guest', 'leuce_777', '/images/artists/leuce.webp', 'LEUCE is a poet, writer and artist based in Accra, Ghana. She writes the way she thinks, out loud and a little unruly, about death, food, God, grief, and what it means to feed your soul on purpose. Her work lives where poetry meets philosophy, with fashion, makeup, yoga and, lately, music all folded in, because to her they’re just different languages for the same feelings.
 
 She’s the founder of Break Time, a free monthly community space for art, fun, expression and mental health awareness, and she writes for Abysmal Productions, a creative house that makes theatre and projects that talk about the things people usually whisper. Mental health advocacy isn’t a side topic for her. It’s in everything she makes.
@@ -51,7 +55,7 @@ Beyond her creative work, Seyram is passionate about leadership and student advo
 Enam started her musical journey from the shrine; her love for music grew stronger when she was singing with her great-grandmothers in the shrines in early childhood. This is not your regular music but chants woven in the frequency and vibrations of a higher dimension, to offer general healing and connection to the cosmic realms and planes.
 
 Enam the HADZIVODUSHI aspires to continue her ancestral genre of music and make it available to the whole world. Despite her versatility over the years, Enam has been mainly consistent and known for her unique smooth vocals and thick blond locs.', true, 14),
-  ('qany', 'qany', 'Qany', 'Special guest', 'guest', 'q.a.n.y_musichub', '', '', true, 15)
+  ('qany', 'qany', 'QANY', 'Beatboxer, photographer & drummer', 'guest', 'q.a.n.y_musichub', '/images/artists/qany.webp', 'QANY is a Ghanaian beatboxer, photographer and drummer. She is the CEO of QANY’s Hub, a hub that provides photography, music classes and swimming lessons.', true, 15)
 on conflict (id) do nothing;
 
 insert into public.jamza_partners (id, name, url, image, tagline, visible, sort) values

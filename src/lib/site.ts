@@ -15,4 +15,4 @@ export const baseOpenGraph = {
   locale: 'en_GH',
 };
 
-export const sameAs = [festival.instagram.url];
+export const sameAs = [festival.instagram.url, festival.tiktok.url, festival.facebook.url];

@@ -1,7 +1,7 @@
 import { festival } from './festival';
 
 export const shuttle = {
-  fare: 30, // GHS, round trip
+  fare: 50, // GHS, round trip
   pickup: 'Accra Mall',
   departure: null as string | null, // TODO: departure time, e.g. '11:00am'
   return: null as string | null, // TODO: return departure time
@@ -10,7 +10,7 @@ export const shuttle = {
 export const bedasHotel = {
   name: 'Beda’s Hotel',
   blurb: 'Stay steps from the stage at the festival venue in Old Ashongman. Bookings go straight through Beda’s.',
-  url: 'https://bedasassociation.com',
+  url: 'https://www.bedasassociation.com/hotel',
 };
 
 /** Only answers we actually know. Add more as details are confirmed. */
@@ -27,6 +27,6 @@ export const faqs = [
     q: 'Where does the shuttle leave from?',
     a: `Accra Mall. The GHS ${shuttle.fare} fare covers the trip to Beda’s and the ride back to Accra Mall.`,
   },
-  { q: 'How do I book Beda’s Hotel?', a: 'Directly on the Beda’s website — bedasassociation.com.' },
+  { q: 'How do I book Beda’s Hotel?', a: 'Directly on the Beda’s website — bedasassociation.com/hotel.' },
   { q: 'Can food and drink vendors apply?', a: 'Not this year — the marketplace is for non-food creatives and businesses.' },
 ];

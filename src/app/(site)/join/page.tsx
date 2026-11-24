@@ -7,7 +7,7 @@ import { baseOpenGraph } from '@/lib/site';
 export const metadata: Metadata = {
   title: 'Get involved',
   description:
-    'Join the JAMZA! Ticket Sales Team and earn 20% commission, or apply to sell at the JAMZA! FESTIVAL 2026 marketplace (deadline 28 November).',
+    'Join the JAMZA! Ticket Sales Team and earn 20% commission, or sign up to vend at the JAMZA! FESTIVAL 2026 marketplace (closes 13 December).',
   alternates: { canonical: '/join' },
   openGraph: { ...baseOpenGraph, url: '/join', title: 'Get involved — JAMZA! FESTIVAL 2026' },
 };

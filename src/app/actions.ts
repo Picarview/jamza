@@ -126,6 +126,14 @@ export async function submitForm(kind: FormKind, _: LetterState, form: FormData)
         used: { status: 'error', message: 'That code has already been used.' },
         already: { status: 'error', message: 'You’ve already claimed this code — check your email.' },
       };
+      // A discount code returns its ticket price, e.g. "price:75".
+      const discounted = /^price:(\d+(?:\.\d+)?)$/.exec(String(data));
+      if (discounted) {
+        return {
+          status: 'sent',
+          message: `Code accepted! Your ticket is ${festival.currency} ${discounted[1]}. We’ll send payment details, then your ticket.`,
+        };
+      }
       return outcomes[String(data)] ?? { status: 'error', message: busy('') };
     }
     if (!missing(error.code)) return { status: 'error', message: busy(error.message) };

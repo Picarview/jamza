@@ -5,6 +5,7 @@ import { Hero } from '@/components/home/Hero';
 import { WhatIs } from '@/components/home/WhatIs';
 import { TheNight } from '@/components/home/TheNight';
 import { Lineup } from '@/components/home/Lineup';
+import { DressCode } from '@/components/home/DressCode';
 import { HouseBand } from '@/components/home/HouseBand';
 import { StoryReel } from '@/components/home/StoryReel';
 import { Tickets } from '@/components/home/Tickets';
@@ -26,6 +27,7 @@ export default async function Home() {
       <Tickets ticketUrl={settings.ticketUrl} communityPrice={settings.communityPrice} />
       <Lineup artists={lineup} />
       <HouseBand />
+      <DressCode />
       <StoryReel />
       <LastTime />
       <UnderTheTree posts={posts} />

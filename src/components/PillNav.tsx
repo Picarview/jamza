@@ -8,7 +8,9 @@ import {
   Cancel01Icon,
   GiftIcon,
   HandshakeIcon,
+  Facebook01Icon,
   InstagramIcon,
+  TiktokIcon,
   Location01Icon,
   Mail01Icon,
   Menu01Icon,
@@ -236,14 +238,24 @@ export function PillNav({ ticketUrl }: { ticketUrl: string | null }) {
             >
               Partners
             </a>
-            <a
-              href={festival.instagram.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-5 py-3 font-semibold"
-            >
-              <Icon icon={InstagramIcon} size={18} /> {festival.instagram.handle}
-            </a>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                { href: festival.instagram.url, icon: InstagramIcon, label: festival.instagram.handle, aria: 'Instagram' },
+                { href: festival.tiktok.url, icon: TiktokIcon, label: 'TikTok', aria: 'TikTok' },
+                { href: festival.facebook.url, icon: Facebook01Icon, label: 'Facebook', aria: 'Facebook' },
+              ].map((s) => (
+                <a
+                  key={s.aria}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${s.aria} (opens in a new tab)`}
+                  className="inline-flex w-fit items-center gap-2 rounded-full border border-cream/25 px-5 py-3 font-semibold"
+                >
+                  <Icon icon={s.icon} size={18} /> {s.label}
+                </a>
+              ))}
+            </div>
             <p className="mt-auto pt-10 text-lavender">
               {brand(festival.name)} · {festival.dateLabel}
             </p>

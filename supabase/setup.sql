@@ -455,7 +455,11 @@ The group seeks to revive and reintroduce the traditional Akan Adenkum music pra
   ('teniade', 'teniade', 'Teniadé', 'Afrosoul singer & producer', 'guest', 'tenimuse', '/images/artists/teniade.webp', 'Teniadé is a British-Nigerian afrosoul singer and producer. Her music is an eclectic blend of sultry funk, jazz, soul and afrobeat crafted in Lagos and Accra.
 
 She is greatly inspired by artists such as the legendary Sade, Fela Kuti, Ebo Taylor and Bob Marley.', true, 10),
-  ('akoto', 'akoto', 'Akoto', 'Special guest', 'guest', 'divaakoto', '', '', true, 11),
+  ('akoto', 'akoto', 'Akoto', 'Songwriter, performer & writer', 'guest', 'divaakoto', '/images/artists/akoto.webp', 'Akoto is a multidisciplinary creative hailing from Kumasi, Ghana. She is skilled in songwriting, live music performances, and creative writing.
+
+With experience in the entertainment industry since the age of 15, Akoto is known for blending genres and embracing diverse facets of creativity, setting her apart from industry norms. She champions women’s empowerment, collaboration, and fearlessness through her work.
+
+Her mission is rooted in creativity, representing freedom, multi-dimensionality, and the spirit of a global icon.', true, 11),
   ('leuce', 'leuce', 'Leuce', 'Poet, writer & artist · Founder of Break Time', 'guest', 'leuce_777', '/images/artists/leuce.webp', 'LEUCE is a poet, writer and artist based in Accra, Ghana. She writes the way she thinks, out loud and a little unruly, about death, food, God, grief, and what it means to feed your soul on purpose. Her work lives where poetry meets philosophy, with fashion, makeup, yoga and, lately, music all folded in, because to her they’re just different languages for the same feelings.
 
 She’s the founder of Break Time, a free monthly community space for art, fun, expression and mental health awareness, and she writes for Abysmal Productions, a creative house that makes theatre and projects that talk about the things people usually whisper. Mental health advocacy isn’t a side topic for her. It’s in everything she makes.
@@ -469,7 +473,7 @@ Beyond her creative work, Seyram is passionate about leadership and student advo
 Enam started her musical journey from the shrine; her love for music grew stronger when she was singing with her great-grandmothers in the shrines in early childhood. This is not your regular music but chants woven in the frequency and vibrations of a higher dimension, to offer general healing and connection to the cosmic realms and planes.
 
 Enam the HADZIVODUSHI aspires to continue her ancestral genre of music and make it available to the whole world. Despite her versatility over the years, Enam has been mainly consistent and known for her unique smooth vocals and thick blond locs.', true, 14),
-  ('qany', 'qany', 'Qany', 'Special guest', 'guest', 'q.a.n.y_musichub', '', '', true, 15)
+  ('qany', 'qany', 'QANY', 'Beatboxer, photographer & drummer', 'guest', 'q.a.n.y_musichub', '/images/artists/qany.webp', 'QANY is a Ghanaian beatboxer, photographer and drummer. She is the CEO of QANY’s Hub, a hub that provides photography, music classes and swimming lessons.', true, 15)
 on conflict (id) do nothing;
 
 insert into public.jamza_partners (id, name, url, image, tagline, visible, sort) values
@@ -522,4 +526,83 @@ with check (bucket_id = 'shop-images' and (select public.jamza_is_admin()));
 drop policy if exists jamza_shop_image_delete on storage.objects;
 create policy jamza_shop_image_delete on storage.objects for delete to authenticated
 using (bucket_id = 'shop-images' and (select public.jamza_is_admin()));
+commit;
+
+-- ===== 20261124000000_jamza_voucher_price.sql =====
+begin;
+
+alter table public.jamza_vouchers add column if not exists price numeric(10,2);
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'jamza_vouchers_price_check') then
+    alter table public.jamza_vouchers add constraint jamza_vouchers_price_check check (price is null or price >= 0);
+  end if;
+end;
+$$;
+
+-- Returns: ok (free ticket), price:<amount> (discounted ticket), invalid, expired, used, already.
+create or replace function public.jamza_redeem_voucher(p_code text, p_name text, p_email text, p_phone text)
+returns text language plpgsql security definer set search_path = '' as $$
+declare
+  v public.jamza_vouchers;
+  v_code text := upper(regexp_replace(coalesce(p_code,''), '\s', '', 'g'));
+  v_mail text := lower(btrim(coalesce(p_email,'')));
+  v_price text;
+begin
+  if v_code !~ '^[A-Z0-9-]{4,24}$'
+     or length(btrim(coalesce(p_name,''))) not between 1 and 100
+     or v_mail !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' or length(v_mail) > 200
+     or length(btrim(coalesce(p_phone,''))) not between 3 and 30 then
+    raise exception 'Please provide a valid code and contact details.' using errcode = '22023';
+  end if;
+  if (select count(*) from public.jamza_voucher_attempts where not ok and created_at > now() - interval '10 minutes') >= 30 then
+    raise exception 'Too many attempts. Please try again later.' using errcode = 'P0001';
+  end if;
+  perform pg_advisory_xact_lock(hashtextextended(v_mail, 0));
+  if (select count(*) from public.jamza_messages where lower(email) = v_mail and date > now() - interval '15 minutes') >= 3 then
+    raise exception 'Too many messages. Please wait 15 minutes.' using errcode = 'P0001';
+  end if;
+
+  select * into v from public.jamza_vouchers where jamza_vouchers.code = v_code for update;
+  if not found then
+    insert into public.jamza_voucher_attempts(ok) values (false);
+    return 'invalid';
+  end if;
+  if not v.active or (v.expires_at is not null and v.expires_at < (now() at time zone 'Africa/Accra')::date) then
+    insert into public.jamza_voucher_attempts(ok) values (false);
+    return 'expired';
+  end if;
+  if exists (select 1 from public.jamza_voucher_redemptions r where r.voucher_id = v.id and r.email = v_mail) then
+    return 'already';
+  end if;
+  if v.uses >= v.max_uses then
+    return 'used';
+  end if;
+
+  -- 75.00 → 75, 12.50 → 12.5
+  v_price := case when v.price is null then null else trim(trailing '.' from trim(trailing '0' from v.price::text)) end;
+
+  update public.jamza_vouchers set uses = uses + 1 where id = v.id;
+  insert into public.jamza_voucher_redemptions(voucher_id, email) values (v.id, v_mail);
+  insert into public.jamza_voucher_attempts(ok) values (true);
+  insert into public.jamza_messages (kind,name,email,subject,message)
+  values ('voucher', btrim(p_name), v_mail,
+          'Voucher ' || v_code || ' — ' || btrim(p_name) || case when v_price is null then '' else ' (GHC ' || v_price || ')' end,
+          '[Ticket voucher]' || chr(10) || chr(10) || 'Voucher code: ' || v_code || chr(10)
+          || 'Ticket: ' || case when v_price is null then 'Free' else 'GHC ' || v_price end || chr(10)
+          || 'Full name: ' || btrim(p_name) || chr(10) || 'Phone / WhatsApp: ' || btrim(p_phone) || chr(10)
+          || 'Claimed automatically (' || (v.uses + 1) || ' of ' || v.max_uses || '). '
+          || case when v_price is null then 'Send their free ticket.' else 'Send payment details (GHC ' || v_price || '), then their ticket.' end);
+  return case when v_price is null then 'ok' else 'price:' || v_price end;
+end;
+$$;
+
+revoke all on function public.jamza_redeem_voucher(text,text,text,text) from public;
+grant execute on function public.jamza_redeem_voucher(text,text,text,text) to anon, authenticated;
+
+-- Break Time community: GHC 75 tickets (25% off Regular), one per person, until sales close.
+insert into public.jamza_vouchers (code, note, max_uses, uses, active, expires_at, price)
+values ('BREAKTIME-JAMZA26', 'Break Time community — 25% off Regular', 300, 0, true, '2026-12-18', 75)
+on conflict (code) do nothing;
+
 commit;

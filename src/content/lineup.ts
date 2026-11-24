@@ -2,6 +2,7 @@
  * JAMZA! FESTIVAL 2026 lineup — official confirmed list, bios and photos supplied by the organisers.
  * Each artist gets a page at /<slug>. Internal booking notes are deliberately not published.
  * Updated 19 Nov: Esi Baby out; MVSSY ("Massy") joins the main artists; Qany joins the guests.
+ * Updated 24 Nov: photos and bios for Akoto and QANY.
  */
 export type Photo = { src: string; width: number; height: number };
 
@@ -154,12 +155,16 @@ const entries: Entry[] = [
   },
   {
     slug: 'akoto',
-    name: 'Akoto', // photo & bio to come
-    role: 'Special guest',
+    name: 'Akoto',
+    role: 'Songwriter, performer & writer',
     tier: 'guest',
     handle: 'divaakoto',
-    photos: [],
-    bio: [],
+    photos: [photo('akoto', 1069, 1600)],
+    bio: [
+      'Akoto is a multidisciplinary creative hailing from Kumasi, Ghana. She is skilled in songwriting, live music performances, and creative writing.',
+      'With experience in the entertainment industry since the age of 15, Akoto is known for blending genres and embracing diverse facets of creativity, setting her apart from industry norms. She champions women’s empowerment, collaboration, and fearlessness through her work.',
+      'Her mission is rooted in creativity, representing freedom, multi-dimensionality, and the spirit of a global icon.',
+    ],
   },
   {
     slug: 'leuce',
@@ -201,12 +206,14 @@ const entries: Entry[] = [
   },
   {
     slug: 'qany',
-    name: 'Qany',
-    role: 'Special guest', // photo & bio to come
+    name: 'QANY',
+    role: 'Beatboxer, photographer & drummer',
     tier: 'guest',
     handle: 'q.a.n.y_musichub',
-    photos: [],
-    bio: [],
+    photos: [photo('qany', 720, 1080)],
+    bio: [
+      'QANY is a Ghanaian beatboxer, photographer and drummer. She is the CEO of QANY’s Hub, a hub that provides photography, music classes and swimming lessons.',
+    ],
   },
 ];
 

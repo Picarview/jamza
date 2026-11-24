@@ -46,6 +46,7 @@ export const toVoucher = (r: Row): Voucher => ({
   uses: Number(r.uses ?? 0),
   active: Boolean(r.active),
   expiresAt: r.expires_at ? String(r.expires_at) : '',
+  price: r.price === null || r.price === undefined ? '' : String(Number(r.price)),
   createdAt: String(r.created_at ?? ''),
 });
 
@@ -57,6 +58,7 @@ export const fromVoucher = (v: Voucher) => ({
   uses: v.uses,
   active: v.active,
   expires_at: v.expiresAt || null,
+  price: v.price.trim() === '' ? null : Number(v.price),
 });
 
 /* ---------- Shop products ---------- */

@@ -33,6 +33,8 @@ export const festival = {
   credit: { name: 'Picarview', url: 'https://picarview.com' as string | null },
   // Official socials. A value set in the admin dashboard (Settings) takes priority.
   instagram: { url: 'https://www.instagram.com/jamza_festival/', handle: '@jamza_festival' },
+  tiktok: { url: 'https://www.tiktok.com/@jamzafestival', handle: '@jamzafestival' },
+  facebook: { url: 'https://www.facebook.com/profile.php?id=61594600203132', handle: 'JAMZA! Festival' },
   ticketUrl: null as string | null, // TODO: checkout link — until then, ticket buttons scroll to #tickets
   currency: 'GHC',
   tickets: [
@@ -40,15 +42,15 @@ export const festival = {
       id: 'early-bird',
       name: 'Early Bird',
       price: 75,
-      note: '11–25 Nov',
-      endsAt: '2026-11-25T23:59:59Z',
+      note: '11–30 Nov',
+      endsAt: '2026-11-30T23:59:59Z',
       featured: true,
     },
     { id: 'student', name: 'Student', price: 55, note: 'Till 18 Dec', endsAt: '2026-12-18T23:59:59Z' },
-    { id: 'regular', name: 'Regular', price: 100, note: '26 Nov – 18 Dec', startsAt: '2026-11-26T00:00:00Z', endsAt: '2026-12-18T23:59:59Z' },
+    { id: 'regular', name: 'Regular', price: 100, note: '1 – 18 Dec', startsAt: '2026-12-01T00:00:00Z', endsAt: '2026-12-18T23:59:59Z' },
     { id: 'vip', name: 'VIP', price: 200, note: '26 Nov – 18 Dec', startsAt: '2026-11-26T00:00:00Z', endsAt: '2026-12-18T23:59:59Z' },
     { id: 'gate', name: 'At the Gate', price: 120, note: '19 Dec only', startsAt: '2026-12-19T00:00:00Z' },
-    { id: 'community', name: 'Break Time Community', price: null, note: 'Price to be confirmed' },
+    { id: 'community', name: 'Break Time Community', price: 75, note: '25% off · community code', endsAt: '2026-12-18T23:59:59Z' },
   ] as {
     id: string;
     name: string;

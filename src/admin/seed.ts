@@ -21,9 +21,9 @@ export function seed(): Db {
       { id: 'm6', kind: 'letter', name: 'Sample Fan', email: 'fan@example.com', subject: 'Just saying hi', body: 'Can’t wait for the After Party!', date: ago(72), status: 'read' },
     ],
     vouchers: [
-      { id: 'v1', code: 'JAMZA-GIFT-01', note: 'Giveaway winner', maxUses: 1, uses: 0, active: true, expiresAt: '2026-12-18', createdAt: ago(48) },
-      { id: 'v2', code: 'PRESS-2026', note: 'Press & media', maxUses: 10, uses: 3, active: true, expiresAt: '2026-12-19', createdAt: ago(96) },
-      { id: 'v3', code: 'ARTIST-PLUS1', note: 'Artist guests', maxUses: 20, uses: 20, active: false, expiresAt: '', createdAt: ago(120) },
+      { id: 'v1', code: 'JAMZA-GIFT-01', note: 'Giveaway winner', maxUses: 1, uses: 0, active: true, expiresAt: '2026-12-18', price: '', createdAt: ago(48) },
+      { id: 'v2', code: 'PRESS-2026', note: 'Press & media', maxUses: 10, uses: 3, active: true, expiresAt: '2026-12-19', price: '', createdAt: ago(96) },
+      { id: 'v3', code: 'ARTIST-PLUS1', note: 'Artist guests', maxUses: 20, uses: 20, active: false, expiresAt: '', price: '', createdAt: ago(120) },
     ],
     products: shopProducts.map((p, i) => ({
       id: p.id,

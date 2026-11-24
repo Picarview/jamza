@@ -2,9 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowUpRight01Icon,
+  Facebook01Icon,
   InstagramIcon,
   Linkedin01Icon,
   Mail01Icon,
+  TiktokIcon,
 } from '@hugeicons/core-free-icons';
 import { festival } from '@/content/festival';
 import { safeUrl } from '@/lib/safe-url';
@@ -17,6 +19,8 @@ import { brand } from './Brand';
 export function Footer({ settings, partners }: { settings: Settings; partners: PartnerTag[] }) {
   const socials = [
     { label: 'Instagram', url: safeUrl(settings.instagram) || festival.instagram.url, icon: InstagramIcon },
+    { label: 'TikTok', url: festival.tiktok.url, icon: TiktokIcon },
+    { label: 'Facebook', url: festival.facebook.url, icon: Facebook01Icon },
     { label: 'LinkedIn', url: safeUrl(settings.linkedin), icon: Linkedin01Icon },
   ].filter((s) => s.url);
 

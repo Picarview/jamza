@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
-import { CheckmarkCircle02Icon, Money03Icon, Store01Icon } from '@hugeicons/core-free-icons';
+import { ArrowUpRight01Icon, Call02Icon, CheckmarkCircle02Icon, Money03Icon, Store01Icon, WhatsappIcon } from '@hugeicons/core-free-icons';
 import { salesTeam, vendors } from '@/content/join';
 import { brand } from '../Brand';
 import { FormCard } from '../FormCard';
@@ -34,7 +34,7 @@ export function JoinTabs({ vendorDeadline }: { vendorDeadline: string }) {
   const info =
     tab === 'sales-team'
       ? { title: `Earn ${salesTeam.commission}% on every ticket`, pitch: salesTeam.pitch, points: salesTeam.points }
-      : { title: 'Sell at the marketplace', pitch: vendors.pitch, points: [`Apply by ${deadlineLabel}.`, ...vendors.points] };
+      : { title: 'Calling all vendors', pitch: vendors.pitch, points: [`Sign-up closes ${deadlineLabel}.`, ...vendors.points] };
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -85,19 +85,43 @@ export function JoinTabs({ vendorDeadline }: { vendorDeadline: string }) {
           {tab === 'sales-team' ? (
             <FormCard kind="sales-team" submitLabel="Apply to join" note="We’ll email you your sales code and next steps." />
           ) : (
-            <FormCard
-              kind="vendor"
-              submitLabel="Send application"
-              note={`Applications close ${deadlineLabel}.`}
-              disabled={
-                vendorsClosed ? (
-                  <>
-                    <p className="display text-4xl">Applications are closed</p>
-                    <p className="mt-3 max-w-sm text-plum/70">Vendor registration closed on {deadlineLabel}. Selected vendors will hear from us by email.</p>
-                  </>
-                ) : undefined
-              }
-            />
+            <div className="relative rounded-[2rem] bg-cream p-6 text-plum shadow-[14px_18px_0_rgb(0_0_0/0.3)] sm:p-9">
+              {vendorsClosed ? (
+                <div className="flex min-h-[16rem] flex-col items-center justify-center text-center">
+                  <p className="display text-4xl">Sign-up is closed</p>
+                  <p className="mt-3 max-w-sm text-plum/70">Vendor sign-up closed on {deadlineLabel}. Selected vendors will hear from us.</p>
+                </div>
+              ) : (
+                <div className="flex min-h-[16rem] flex-col items-start justify-center">
+                  <span className="grid size-14 place-items-center rounded-full bg-plum text-cream">
+                    <Icon icon={Store01Icon} size={26} />
+                  </span>
+                  <p className="display mt-6 text-4xl sm:text-5xl">Sign up to vend</p>
+                  <p className="mt-3 max-w-md text-plum/75">
+                    Fill in the vendor sign-up form. It takes a few minutes, and sign-up closes {deadlineLabel}.
+                  </p>
+                  <a
+                    href={vendors.form}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn mt-7 bg-plum text-cream shadow-[4px_5px_0_var(--color-tomato)]"
+                  >
+                    Open the sign-up form <Icon icon={ArrowUpRight01Icon} size={18} />
+                  </a>
+                  <div className="mt-8 w-full border-t-2 border-dashed border-plum/15 pt-6">
+                    <p className="text-sm font-bold">Questions? Reach out</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <a href={`tel:${vendors.phone.tel}`} className="inline-flex items-center gap-2 rounded-full border-2 border-plum/15 px-4 py-2 text-sm font-bold transition-colors hover:border-plum/40">
+                        <Icon icon={Call02Icon} size={16} /> {vendors.phone.label}
+                      </a>
+                      <a href={vendors.phone.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border-2 border-plum/15 px-4 py-2 text-sm font-bold transition-colors hover:border-plum/40">
+                        <Icon icon={WhatsappIcon} size={16} /> WhatsApp
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </motion.div>
       </AnimatePresence>

@@ -10,7 +10,7 @@ import { Icon } from '../Icon';
 const field =
   'w-full rounded-2xl border-2 border-cream/15 bg-black/30 px-4 py-3 text-cream placeholder:text-cream/40 transition-colors focus:border-lime focus:outline-none';
 
-/** "Got a voucher?" — code first, then contact details to send the free ticket to. */
+/** "Got a code?" — voucher (free ticket) or community (discounted) code, then contact details. */
 export function VoucherBox() {
   const [state, action, pending] = useActionState<LetterState, FormData>(submitForm.bind(null, 'voucher'), {
     status: 'idle',
@@ -28,7 +28,7 @@ export function VoucherBox() {
               <Icon icon={CheckmarkCircle02Icon} size={28} />
             </span>
             <div>
-              <p className="display text-3xl text-cream">Voucher sent</p>
+              <p className="display text-3xl text-cream">Code accepted</p>
               <p className="text-cream/75">{state.message}</p>
             </div>
           </motion.div>
@@ -43,8 +43,8 @@ export function VoucherBox() {
                   <Icon icon={Ticket02Icon} size={26} />
                 </span>
                 <div>
-                  <p className="display text-3xl text-cream">Got a voucher?</p>
-                  <p className="text-cream/75">Redeem your code for a free ticket.</p>
+                  <p className="display text-3xl text-cream">Got a code?</p>
+                  <p className="text-cream/75">Redeem a voucher or community code.</p>
                 </div>
               </div>
               <label className="flex-1">
@@ -79,7 +79,7 @@ export function VoucherBox() {
                     <input name="email" type="email" required maxLength={200} autoComplete="email" placeholder="Email" aria-label="Email" className={field} />
                   </div>
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm text-cream/55">One ticket per code. We’ll check it and email your ticket.</p>
+                    <p className="text-sm text-cream/55">One ticket per person. We’ll check your code and email you.</p>
                     <button type="submit" disabled={pending} className="btn bg-lime text-black shadow-[4px_5px_0_#000] disabled:opacity-60">
                       {pending ? 'Checking…' : 'Redeem'}
                     </button>

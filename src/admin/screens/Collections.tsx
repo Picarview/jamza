@@ -9,6 +9,7 @@ import { Badge, CollectionTable, NotLiveYet, PageTitle, randomCode, type FieldDe
 const visibleField: FieldDef = { name: 'visible', label: 'Visible on the site', type: 'checkbox', placeholder: 'Show it' };
 const thumb = (src: string, round = false) =>
   src ? <img src={src} alt="" className={`size-10 shrink-0 bg-white object-cover ${round ? 'rounded-full' : 'rounded-lg'}`} /> : <span className={`size-10 shrink-0 bg-plum/10 ${round ? 'rounded-full' : 'rounded-lg'}`} />;
+const money = /^\d{1,7}(\.\d{1,2})?$/;
 const shown = (v: boolean) => (v ? <Badge tone="green">Live</Badge> : <Badge tone="grey">Hidden</Badge>);
 
 /* ---------- Vouchers ---------- */
@@ -17,24 +18,31 @@ export function Vouchers() {
   const { db, save, remove } = useAdmin();
   return (
     <>
-      <PageTitle title="Vouchers" intro="Codes that unlock a free ticket. Visitors enter them in the Tickets section; you approve them from the inbox." />
+      <PageTitle
+        title="Vouchers"
+        intro="Codes visitors redeem in the Tickets section: free tickets, or discounted ones when you set a price (like the Break Time community code). Claims land in the inbox."
+      />
       <CollectionTable<Voucher>
         rows={db.vouchers}
         noun="voucher"
         search={(v) => `${v.code} ${v.note}`}
-        blank={() => ({ id: newId(), code: randomCode(), note: '', maxUses: 1, uses: 0, active: true, expiresAt: '2026-12-18', createdAt: new Date().toISOString() })}
-        validate={(v, rows) =>
-          !VOUCHER_PATTERN.test(v.code)
+        blank={() => ({ id: newId(), code: randomCode(), note: '', maxUses: 1, uses: 0, active: true, expiresAt: '2026-12-18', price: '', createdAt: new Date().toISOString() })}
+        validate={(v, rows) => {
+          v.price = v.price.trim().replace(/^(GHC|GHS|GH₵|₵)\s*/i, '');
+          return !VOUCHER_PATTERN.test(v.code)
             ? 'Codes are 4–24 letters, numbers or dashes.'
             : rows.some((r) => r.code === v.code && r.id !== v.id)
               ? 'That code already exists.'
               : v.uses > v.maxUses
                 ? 'Uses can’t be more than the limit.'
-                : null
-        }
+                : v.price && !money.test(v.price)
+                  ? 'Ticket price must be a number, e.g. 75.'
+                  : null;
+        }}
         columns={[
           { label: 'Code', cell: (v) => <span className="font-black tracking-[0.12em]">{v.code}</span> },
           { label: 'For', wrap: true, cell: (v) => <span className="text-plum/70">{v.note || '—'}</span> },
+          { label: 'Ticket', cell: (v) => (v.price ? <Badge tone="gold">GHC {v.price}</Badge> : <Badge tone="plum">Free</Badge>) },
           {
             label: 'Used',
             cell: (v) => (
@@ -59,7 +67,8 @@ export function Vouchers() {
         fields={[
           { name: 'code', label: 'Code', type: 'code', required: true, help: 'Tap the arrows to generate one. Letters, numbers and dashes.' },
           { name: 'note', label: 'Who is it for?', placeholder: 'e.g. Giveaway winner, Press, Artist guests' },
-          { name: 'maxUses', label: 'Number of free tickets', type: 'number', half: true },
+          { name: 'price', label: 'Ticket price (GHC)', half: true, placeholder: 'Empty = free ticket', help: 'Set a price for discount codes, e.g. 75.' },
+          { name: 'maxUses', label: 'Number of tickets', type: 'number', half: true, help: 'One per person.' },
           { name: 'uses', label: 'Already used', type: 'number', half: true },
           { name: 'expiresAt', label: 'Expires on', type: 'date', half: true, help: 'Leave empty for no expiry.' },
           { name: 'active', label: 'Status', type: 'checkbox', placeholder: 'Code can be redeemed', half: true },
@@ -72,8 +81,6 @@ export function Vouchers() {
 }
 
 /* ---------- Shop ---------- */
-
-const money = /^\d{1,7}(\.\d{1,2})?$/;
 
 const productScreens = {
   shop: {

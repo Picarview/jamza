@@ -24,6 +24,7 @@ export type Voucher = {
   uses: number;
   active: boolean;
   expiresAt: string; // yyyy-mm-dd or ''
+  price: string; // GHS ticket price, '' = free ticket
   createdAt: string;
 };
 

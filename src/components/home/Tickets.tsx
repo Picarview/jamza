@@ -99,13 +99,16 @@ export function Tickets({ ticketUrl, communityPrice }: { ticketUrl: string | nul
               {earlyBirdOn ? 'Available now!' : 'Grab your ticket'}
             </h2>
             {earlyBirdOn && (
-              <p className="display mt-3 text-2xl text-cream">Early bird till November 25</p>
+              <p className="display mt-3 text-2xl text-cream">
+                Early bird till{' '}
+                {new Date(featured!.endsAt!).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' }).replace(/(\d+) (\w+)/, '$2 $1')}
+              </p>
             )}
             <ul className="mt-8 flex flex-wrap gap-2 text-sm font-semibold">
               {[
                 { icon: Clock01Icon, text: `${festival.shortDate} · ${festival.hours}` },
                 { icon: Location01Icon, text: 'Beda’s, Old Ashongman', href: '/visit' },
-                { icon: Dress01Icon, text: `Dress code: ${festival.dressCode}`, href: '/visit#dress-code' },
+                { icon: Dress01Icon, text: `Dress code: ${festival.dressCode}`, href: '/#dress-code' },
               ].map((item) => (
                 <li key={item.text}>
                   {item.href ? (
